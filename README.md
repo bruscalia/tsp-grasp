@@ -1,6 +1,6 @@
 # tsp-grasp
 
-A Greedy Randomized Adaptive Search Procedure (GRASP) algorithm designed for the TSP
+A Greedy Randomized Adaptive Search Procedure (GRASP) algorithm designed for the TSP. Asymmetric instances are accepted.
 
 <p align="left">
   <img src="./assets/tsp_1000.png" width="400" title="icon tsp">
@@ -21,7 +21,6 @@ Here is a minimum working example:
 import numpy as np
 from scipy.spatial.distance import pdist, squareform
 from tspgrasp.grasp import Grasp
-from tspgrasp.problem import Problem
 ```
 
 ```python
@@ -31,9 +30,8 @@ N = 100
 X = np.random.random((N, 2))
 D = np.round(squareform(pdist(X)), decimals=8)
 
-problem = Problem(N, D)
 grasp = Grasp(alpha=1.0, seed=12, time_limit=10)
-sol = grasp.solve(problem)
+sol = grasp.solve(D)
 
 print(sol.cost)
 ```

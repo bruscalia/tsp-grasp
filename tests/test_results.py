@@ -4,7 +4,7 @@ import os
 import numpy as np
 from scipy.spatial.distance import pdist, squareform
 
-from tspgrasp import Grasp, Problem
+from tspgrasp import Grasp
 
 
 HERE = os.path.dirname(__file__)
@@ -14,10 +14,9 @@ def test_1():
     fpath = os.path.join(HERE, "test_1.json")
     with open(fpath, mode="r", encoding="utf8") as file:
         data = json.load(file)
-    problem = Problem(data["n_points"], np.array(data["distances"]))
     grasp = Grasp(alpha=data["alpha"], seed=data["seed"], time_limit=100, max_moves=10000, max_iter=3)
-    sol = grasp.solve(problem)
-    assert sol.solution == data["tour"], "Tour different from original"
+    sol = grasp.solve(np.array(data["distances"]))
+    assert sol.tour == data["tour"], "Tour different from original"
     assert sol.cost == data["cost"], "Cost different from original"
 
 
@@ -25,10 +24,9 @@ def test_2():
     fpath = os.path.join(HERE, "test_2.json")
     with open(fpath, mode="r", encoding="utf8") as file:
         data = json.load(file)
-    problem = Problem(data["n_points"], np.array(data["distances"]))
     grasp = Grasp(alpha=data["alpha"], seed=data["seed"], time_limit=100, max_moves=10000, max_iter=3)
-    sol = grasp.solve(problem)
-    assert sol.solution == data["tour"], "Tour different from original"
+    sol = grasp.solve(np.array(data["distances"]))
+    assert sol.tour == data["tour"], "Tour different from original"
     assert sol.cost == data["cost"], "Cost different from original"
 
 
@@ -43,10 +41,9 @@ def create_problem(filename, n_points, alpha, seed):
         "seed": seed
     }
 
-    problem = Problem(n_points, D)
     grasp = Grasp(alpha=alpha, seed=seed, time_limit=100, max_moves=10000, max_iter=3)
-    sol = grasp.solve(problem)
-    pdata["tour"] = sol.solution
+    sol = grasp.solve(np.array(pdata["distances"]))
+    pdata["tour"] = sol.tour
     pdata["cost"] = sol.cost
     with open(filename, mode="w", encoding="utf8") as file:
         json.dump(pdata, file)

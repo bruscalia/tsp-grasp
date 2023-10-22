@@ -5,11 +5,31 @@ import numpy as np
 from tspgrasp.problem import Problem
 from tspgrasp.constructive import SemiGreedy
 from tspgrasp.local_search import LocalSearch
+from tspgrasp.solution import Solution
 
 
 class Grasp:
 
     def __init__(self, alpha=(0.0, 1.0), max_moves=10000, max_iter=100, time_limit=60, seed=None):
+        """GRASP for general TSP
+
+        Parameters
+        ----------
+        alpha : tuple | float, optional
+            Greediness factor (higher is more greedy), by default (0.0, 1.0)
+
+        max_moves : int, optional
+            Max moves by local search, by default 10000
+
+        max_iter : int, optional
+            Max iterations, by default 100
+
+        time_limit : int, optional
+            Time limit, by default 60
+
+        seed : int, optional
+            Numpy generator random seed, by default None
+        """
         self.alpha = alpha
         self.max_moves = max_moves
         self.max_iter = max_iter
@@ -17,7 +37,29 @@ class Grasp:
         self.seed = seed
         self.costs = []
 
-    def solve(self, problem: Problem, target=-np.inf):
+    def solve(self, D: np.ndarray, target=-np.inf) -> Solution:
+        """Solves a TSP based on a generic 2-dimensional distances matrix
+
+        Parameters
+        ----------
+        D : np.ndarray
+            2-dimensional distances matrix
+
+        target : float, optional
+            Target to stop solution, by default -np.inf
+
+        Returns
+        -------
+        Solution
+            Results with properties:
+            - tour : List[int] (depot is included twice)
+            - cost : float
+        """
+
+        # Initialize problem
+        n_nodes = D.shape[0]
+        assert D.shape[0] == D.shape[1], "D must be a squared matrix"
+        problem = Problem(n_nodes, D)
 
         # Initialize operators
         constructive = SemiGreedy(problem, alpha=self.alpha, seed=self.seed)
@@ -43,7 +85,7 @@ class Grasp:
 
             # Replace if it overcomes best so far
             if constructive.tour.cost < best_cost:
-                sol = constructive.tour
+                sol = Solution(constructive.tour)
                 best_cost = sol.cost
 
                 # Break if better than target
