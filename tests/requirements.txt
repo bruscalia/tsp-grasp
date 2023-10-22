@@ -1,0 +1,4 @@
+numpy==1.26.*
+Cython==3.*
+scipy==1.11
+pytest==7.*
