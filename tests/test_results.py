@@ -1,4 +1,5 @@
 import json
+import os
 
 import numpy as np
 from scipy.spatial.distance import pdist, squareform
@@ -6,8 +7,12 @@ from scipy.spatial.distance import pdist, squareform
 from tspgrasp import Grasp, Problem
 
 
+HERE = os.path.dirname(__file__)
+
+
 def test_1():
-    with open("test_1.json", mode="r", encoding="utf8") as file:
+    fpath = os.path.join(HERE, "test_1.json")
+    with open(fpath, mode="r", encoding="utf8") as file:
         data = json.load(file)
     problem = Problem(data["n_points"], np.array(data["distances"]))
     grasp = Grasp(alpha=data["alpha"], seed=data["seed"], time_limit=100, max_moves=10000, max_iter=3)
@@ -17,7 +22,8 @@ def test_1():
 
 
 def test_2():
-    with open("test_2.json", mode="r", encoding="utf8") as file:
+    fpath = os.path.join(HERE, "test_2.json")
+    with open(fpath, mode="r", encoding="utf8") as file:
         data = json.load(file)
     problem = Problem(data["n_points"], np.array(data["distances"]))
     grasp = Grasp(alpha=data["alpha"], seed=data["seed"], time_limit=100, max_moves=10000, max_iter=3)
