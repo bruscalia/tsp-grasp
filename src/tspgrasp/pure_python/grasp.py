@@ -10,13 +10,13 @@ from tspgrasp.solution import Solution
 
 class Grasp:
 
-    def __init__(self, alpha=(0.0, 1.0), max_moves=10000, max_iter=100, time_limit=60, seed=None):
+    def __init__(self, alpha=1.0, max_moves=10000, max_iter=100, time_limit=60, seed=None):
         """GRASP for general TSP
 
         Parameters
         ----------
         alpha : tuple | float, optional
-            Greediness factor (higher is more greedy), by default (0.0, 1.0)
+            Greediness factor (higher is more greedy), by default 1.0
 
         max_moves : int, optional
             Max moves by local search, by default 10000
