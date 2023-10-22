@@ -1,0 +1,35 @@
+name: Testing
+on:
+  push:
+    branches:
+      - develop
+      - main
+
+jobs:
+
+  testing:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Python 3
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+      - name: Install Dependencies
+        run: |
+          pip install numpy Cython
+          pip install -r tests/requirements.txt
+          pip install pytest
+      - name: Install tspgrasp (DEBUG)
+        run: |
+          python setup.py install
+      - name: Install tspgrasp
+        run: |
+          pip install .
+          rm -rf tspgrasp
+      - name: Check Compilation
+        run: |
+          python -c "from tspgrasp.utils import cythonized;print('Compiled Extensions: ', cythonized)"
+      - name: Run Tests
+        run: |
+          pytest -v --maxfail 1 --no-header -m "not long"
