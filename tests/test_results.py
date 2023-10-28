@@ -14,8 +14,8 @@ def test_1():
     fpath = os.path.join(HERE, "test_1.json")
     with open(fpath, mode="r", encoding="utf8") as file:
         data = json.load(file)
-    grasp = Grasp(alpha=data["alpha"], seed=data["seed"], time_limit=100, max_moves=10000, max_iter=3)
-    sol = grasp.solve(np.array(data["distances"]))
+    grasp = Grasp(alpha=data["alpha"], seed=data["seed"])
+    sol = grasp(np.array(data["distances"]), time_limit=100, max_moves=10000, max_iter=3)
     assert sol.tour == data["tour"], "Tour different from original"
     assert sol.cost == data["cost"], "Cost different from original"
 
@@ -24,8 +24,8 @@ def test_2():
     fpath = os.path.join(HERE, "test_2.json")
     with open(fpath, mode="r", encoding="utf8") as file:
         data = json.load(file)
-    grasp = Grasp(alpha=data["alpha"], seed=data["seed"], time_limit=100, max_moves=10000, max_iter=3)
-    sol = grasp.solve(np.array(data["distances"]))
+    grasp = Grasp(alpha=data["alpha"], seed=data["seed"])
+    sol = grasp(np.array(data["distances"]), time_limit=100, max_moves=10000, max_iter=3)
     assert sol.tour == data["tour"], "Tour different from original"
     assert sol.cost == data["cost"], "Cost different from original"
 
@@ -41,8 +41,8 @@ def create_problem(filename, n_points, alpha, seed):
         "seed": seed
     }
 
-    grasp = Grasp(alpha=alpha, seed=seed, time_limit=100, max_moves=10000, max_iter=3)
-    sol = grasp.solve(np.array(pdata["distances"]))
+    grasp = Grasp(alpha=alpha, seed=seed)
+    sol = grasp(np.array(pdata["distances"]), time_limit=100, max_moves=10000, max_iter=3)
     pdata["tour"] = sol.tour
     pdata["cost"] = sol.cost
     with open(filename, mode="w", encoding="utf8") as file:

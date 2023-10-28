@@ -12,13 +12,13 @@ from tspgrasp.tour cimport Tour
 cdef class LocalSearch:
 
     cdef public:
-        double[:, :] D
         int max_iter
         int n_moves
 
     cdef:
         Tour _tour
         object _rng
+        double[:, :] _D
 
     cdef bool move_1(LocalSearch self, Node u, Node v) except *
     cdef bool move_2(LocalSearch self, Node u, Node v) except *

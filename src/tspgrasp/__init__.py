@@ -5,4 +5,4 @@ try:
 
 except:
     warnings.warn("Failed to import Cython implementations - Using pure Python")
-    from tspgrasp.pure_python.grasp import Grasp
+    from tspgrasp.pure_python.grasp import GrasPy as Grasp

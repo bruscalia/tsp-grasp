@@ -1,16 +1,16 @@
 import numpy as np
 
 from tspgrasp.pure_python.node import Node
+from tspgrasp.pure_python.problem import Problem
 from tspgrasp.pure_python.tour import Tour
 
 
 class LocalSearch:
 
-    def __init__(self, D: np.ndarray, max_iter=10000, seed=None) -> None:
-        self.D = D
-        self.max_iter = max_iter
+    def __init__(self, seed=None) -> None:
         self._rng = np.random.default_rng(seed)
         self.n_moves = 0
+        self._D = np.empty((0, 0), dtype=np.double)
 
     @property
     def tour(self) -> Tour:
@@ -20,13 +20,14 @@ class LocalSearch:
     def rng(self) -> np.random.Generator:
         return self._rng
 
-    def do(self, tour: Tour):
+    def do(self, tour: Tour, problem: Problem, max_iter=100000):
         n_iter = 0
         proceed = True
         self._tour = Tour(tour.depot)
+        self._D = problem.D
         self.n_moves = 0
         pool = sorted(self._tour.nodes, key=lambda x: x.index)
-        while proceed and n_iter < self.max_iter:
+        while proceed and n_iter < max_iter:
             n_iter = n_iter + 1
             proceed = False or n_iter <= 1
             candidates = list(range(len(pool)))
@@ -76,10 +77,10 @@ class LocalSearch:
 
         # Else compute costs
         else:
-            cs_u = self.D[u.prev.index, x.index] - self.D[u.prev.index, u.index] \
-                - self.D[u.index, x.index]
-            cs_v = self.D[v.index, u.index] + self.D[u.index, y.index] \
-                - self.D[v.index, y.index]
+            cs_u = self._D[u.prev.index, x.index] - self._D[u.prev.index, u.index] \
+                - self._D[u.index, x.index]
+            cs_v = self._D[v.index, u.index] + self._D[u.index, y.index] \
+                - self._D[v.index, y.index]
             cost = cs_u + cs_v
 
             # Update
@@ -87,7 +88,7 @@ class LocalSearch:
                 return False
             else:
                 self.insert_node(u, v)
-                self._tour.calc_costs(self.D)
+                self._tour.calc_costs(self._D)
                 self.n_moves = self.n_moves + 1
         return True
 
@@ -103,10 +104,10 @@ class LocalSearch:
 
         # Else compute costs
         else:
-            cs_u = self.D[u.prev.index, x.next.index] - self.D[u.prev.index, u.index] \
-                - self.D[x.index, x.next.index]
-            cs_v = self.D[v.index, u.index] + self.D[x.index, y.index] \
-                - self.D[v.index, y.index]
+            cs_u = self._D[u.prev.index, x.next.index] - self._D[u.prev.index, u.index] \
+                - self._D[x.index, x.next.index]
+            cs_v = self._D[v.index, u.index] + self._D[x.index, y.index] \
+                - self._D[v.index, y.index]
             cost = cs_u + cs_v
 
             # Update
@@ -115,7 +116,7 @@ class LocalSearch:
             else:
                 self.insert_node(u, v)
                 self.insert_node(x, u)
-                self._tour.calc_costs(self.D)
+                self._tour.calc_costs(self._D)
                 self.n_moves = self.n_moves + 1
         return True
 
@@ -131,10 +132,10 @@ class LocalSearch:
 
         # Else compute costs
         else:
-            cs_u = self.D[u.prev.index, x.next.index] - self.D[u.prev.index, u.index] \
-                - self.D[u.index, x.index] - self.D[x.index, x.next.index]
-            cs_v = self.D[v.index, x.index] + self.D[x.index, u.index] \
-                + self.D[u.index, y.index] - self.D[v.index, y.index]
+            cs_u = self._D[u.prev.index, x.next.index] - self._D[u.prev.index, u.index] \
+                - self._D[u.index, x.index] - self._D[x.index, x.next.index]
+            cs_v = self._D[v.index, x.index] + self._D[x.index, u.index] \
+                + self._D[u.index, y.index] - self._D[v.index, y.index]
             cost = cs_u + cs_v
 
             # Update
@@ -143,7 +144,7 @@ class LocalSearch:
             else:
                 self.insert_node(x, v)
                 self.insert_node(u, x)
-                self._tour.calc_costs(self.D)
+                self._tour.calc_costs(self._D)
                 self.n_moves = self.n_moves + 1
         return True
 
@@ -159,10 +160,10 @@ class LocalSearch:
 
         # Else compute costs
         else:
-            cs_u = self.D[u.prev.index, v.index] + self.D[v.index, x.index] \
-                - self.D[u.prev.index, u.index] - self.D[u.index, x.index]
-            cs_v = self.D[v.prev.index, u.index] + self.D[u.index, y.index] \
-                - self.D[v.prev.index, v.index] - self.D[v.index, y.index]
+            cs_u = self._D[u.prev.index, v.index] + self._D[v.index, x.index] \
+                - self._D[u.prev.index, u.index] - self._D[u.index, x.index]
+            cs_v = self._D[v.prev.index, u.index] + self._D[u.index, y.index] \
+                - self._D[v.prev.index, v.index] - self._D[v.index, y.index]
             cost = cs_u + cs_v
 
             # Update
@@ -170,7 +171,7 @@ class LocalSearch:
                 return False
             else:
                 self.swap_node(u, v)
-                self._tour.calc_costs(self.D)
+                self._tour.calc_costs(self._D)
                 self.n_moves = self.n_moves + 1
 
         return True
@@ -188,10 +189,10 @@ class LocalSearch:
 
         # Else compute costs
         else:
-            cs_u = self.D[u.prev.index, v.index] + self.D[v.index, x.next.index] \
-                - self.D[u.prev.index, u.index] - self.D[x.index, x.next.index]
-            cs_v = self.D[v.prev.index, u.index] + self.D[x.index, y.index] \
-                - self.D[v.prev.index, v.index] - self.D[v.index, y.index]
+            cs_u = self._D[u.prev.index, v.index] + self._D[v.index, x.next.index] \
+                - self._D[u.prev.index, u.index] - self._D[x.index, x.next.index]
+            cs_v = self._D[v.prev.index, u.index] + self._D[x.index, y.index] \
+                - self._D[v.prev.index, v.index] - self._D[v.index, y.index]
             cost = cs_u + cs_v
 
             # Update
@@ -200,7 +201,7 @@ class LocalSearch:
             else:
                 self.swap_node(u, v)
                 self.insert_node(x, u)
-                self._tour.calc_costs(self.D)
+                self._tour.calc_costs(self._D)
                 self.n_moves = self.n_moves + 1
         return True
 
@@ -217,10 +218,10 @@ class LocalSearch:
 
         # Else compute costs
         else:
-            cs_u = self.D[u.prev.index, v.index] + self.D[y.index, x.next.index] \
-                - self.D[u.prev.index, u.index] - self.D[x.index, x.next.index]
-            cs_v = self.D[v.prev.index, u.index] + self.D[x.index, y.next.index] \
-                - self.D[v.prev.index, v.index] - self.D[y.index, y.next.index]
+            cs_u = self._D[u.prev.index, v.index] + self._D[y.index, x.next.index] \
+                - self._D[u.prev.index, u.index] - self._D[x.index, x.next.index]
+            cs_v = self._D[v.prev.index, u.index] + self._D[x.index, y.next.index] \
+                - self._D[v.prev.index, v.index] - self._D[y.index, y.next.index]
             cost = cs_u + cs_v
 
             # Update
@@ -229,7 +230,7 @@ class LocalSearch:
             else:
                 self.swap_node(u, v)
                 self.swap_node(x, y)
-                self._tour.calc_costs(self.D)
+                self._tour.calc_costs(self._D)
                 self.n_moves = self.n_moves + 1
         return True
 
@@ -245,8 +246,8 @@ class LocalSearch:
 
         # Else compute costs
         else:
-            cost = self.D[u.index, v.index] + self.D[x.index, y.index] \
-                - self.D[u.index, x.index] - self.D[v.index, y.index] \
+            cost = self._D[u.index, v.index] + self._D[x.index, y.index] \
+                - self._D[u.index, x.index] - self._D[v.index, y.index] \
                     + v.cum_rdist - x.cum_rdist
 
         # If poor move stop
@@ -272,7 +273,7 @@ class LocalSearch:
         y.prev = x
 
         # Update
-        self._tour.calc_costs(self.D)
+        self._tour.calc_costs(self._D)
         self.n_moves = self.n_moves + 1
 
         return True

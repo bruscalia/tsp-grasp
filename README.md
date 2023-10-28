@@ -31,8 +31,8 @@ X = np.random.random((100, 2))
 D = squareform(pdist(X))
 
 # Instantiate algorithm and solve problem
-grasp = Grasp(alpha=1.0, seed=12, time_limit=10, max_iter=100)
-sol = grasp.solve(D)
+grasp = Grasp(alpha=1.0, seed=12)
+sol = grasp(D, time_limit=10, max_iter=100)
 
 # Display cost and tour
 print(f"Cost: {sol.cost}")

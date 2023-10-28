@@ -12,9 +12,8 @@ from tspgrasp.tour cimport Tour
 
 cdef class CheapestArc:
 
-    def __init__(self, Problem problem, seed=None):
+    def __init__(self, seed=None):
         self.rng = np.random.default_rng(seed)
-        self.problem = problem
         self.nodes = []
         self.queue = []
 
@@ -50,13 +49,14 @@ cdef class CheapestArc:
         return costs
 
     @abstractmethod
-    def do(self):
+    def do(self, Problem problem):
         pass
 
 
 cdef class GreedyCheapestArc(CheapestArc):
 
-    def do(self):
+    def do(self, Problem problem):
+        self.problem = problem
         self.start()
         while len(self.queue) > 0:
             costs = self.calc_candidates()
@@ -68,15 +68,16 @@ cdef class GreedyCheapestArc(CheapestArc):
 
 cdef class SemiGreedy(CheapestArc):
 
-    def __init__(self, problem: Problem, alpha=(0.0, 1.0), seed=None):
-        super().__init__(problem, seed)
+    def __init__(self, alpha=(0.0, 1.0), seed=None):
+        super().__init__(seed)
         if isinstance(alpha, float) or isinstance(alpha, int):
             alpha = (alpha, alpha)
         self.alpha = alpha
 
-    def do(self):
+    def do(self, Problem problem):
         cdef:
             double alpha
+        self.problem = problem
         self.start()
         alpha = self.alpha[0] + self.rng.random() * (self.alpha[1] - self.alpha[0]) - 1e-6
         while len(self.queue) > 0:
