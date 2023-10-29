@@ -88,3 +88,24 @@ class SemiGreedy(CheapestArc):
             nd = self.queue.pop(choice)
             self.insert(nd)
         return self.tour.cost
+
+
+class CheapestInsertion(SemiGreedy):
+
+    def calc_insertion(self, new: Node) -> float:
+        node: Node
+        cost = float("inf")
+        for node in self.tour.nodes:
+            cfrom = self.problem.D[node.index, new.index]
+            cnext = self.problem.D[new.index, node.next.index]
+            c = cfrom + cnext
+            if c < cost:
+                new.prev = node
+                cost = c
+        return cost
+
+    def insert(self, new: Node):
+        node = new.prev
+        new.next = node.next
+        node.next.prev = new
+        node.next = new
