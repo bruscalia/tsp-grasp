@@ -23,8 +23,8 @@ class GrasPy(GraspCython):
     def __call__(
         self,
         D: np.ndarray,
-        max_iter: MAX_ITER,
-        max_moves: MAX_MOVES,
+        max_iter=MAX_ITER,
+        max_moves=MAX_MOVES,
         time_limit: float = float("inf"),
         target: float = -float("inf"),
     ) -> Solution:

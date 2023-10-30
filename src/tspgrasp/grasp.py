@@ -34,8 +34,8 @@ class Grasp:
     def __call__(
         self,
         D: np.ndarray,
-        max_iter: MAX_ITER,
-        max_moves: MAX_MOVES,
+        max_iter=MAX_ITER,
+        max_moves=MAX_MOVES,
         time_limit: float = float("inf"),
         target: float = -float("inf"),
     ) -> Solution:
@@ -46,11 +46,11 @@ class Grasp:
         D : np.ndarray
             2-dimensional distances matrix
 
-        max_iter : 10000
-            Maximum number of complete iterations
+        max_iter : int
+            Maximum number of complete iterations, by default 10000
 
-        max_moves : 100000
-            Maximum number of local search moves
+        max_moves : int
+            Maximum number of local search moves, by default 100000
 
         time_limit : float, optional
             Time limit to interrupt the solution, by default float("inf")
@@ -94,11 +94,11 @@ class Grasp:
         problem : Problem
             Instance with attributes `n_nodes` and `D`, a 2-dimensional distances matrix
 
-        max_iter : 10000
-            Maximum number of complete iterations
+        max_iter : int
+            Maximum number of complete iterations, by default 10000
 
-        max_moves : 100000
-            Maximum number of local search moves
+        max_moves : int
+            Maximum number of local search moves, by default 100000
 
         time_limit : float, optional
             Time limit to interrupt the solution, by default float("inf")
