@@ -1,9 +1,11 @@
 import math
+from typing import List
 
 import numpy as np
 
 from tspgrasp.pure_python.node import Node
 from tspgrasp.pure_python.problem import Problem
+from tspgrasp.solution import Solution
 from tspgrasp.pure_python.tour import Tour
 
 
@@ -12,10 +14,47 @@ class LocalSearch:
     _correlated_nodes: list
 
     def __init__(self, seed=None) -> None:
+        """Local Search (VNS) implementation for TSP
+
+        Parameters
+        ----------
+        seed : int, optional
+            Random generator seed, by default None
+        """
         self.n_moves = 0
         self._rng = np.random.default_rng(seed)
         self._D = np.empty((0, 0), dtype=np.double)
         self._correlated_nodes = []
+
+    def __call__(self, seq: List[int], D: np.ndarray, max_iter=100000):
+        """Solve a TSP based on an initial solution and a distance matrix
+
+        Parameters
+        ----------
+        seq : List[int]
+            Initial solution
+
+        D : np.ndarray
+            2d-distance matrix
+
+        max_iter : int, optional
+            Max number of moves, by default 100000
+
+        Returns
+        -------
+        Solution
+            Attributes:
+            - tour : List[int]
+            - cost : float
+        """
+        assert D.shape[0] == D.shape[1], "D must be a squared matrix"
+        assert D.shape[0] == len(seq), "D must be the same length as seq"
+        problem = Problem(len(seq), D)
+        self.set_problem(problem)
+        tour = Tour.new(seq)
+        self.do(tour, max_iter=max_iter)
+        sol = Solution(self.tour)
+        return sol
 
     def do(self, tour: Tour, max_iter: int = 100000):
         self._prepare_search(tour)

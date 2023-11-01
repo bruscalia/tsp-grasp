@@ -6,6 +6,7 @@ import numpy as np
 from tspgrasp.pure_python.node import Node
 from tspgrasp.pure_python.problem import Problem
 from tspgrasp.pure_python.tour import Tour
+from tspgrasp.solution import Solution
 
 
 class CheapestArc:
@@ -22,24 +23,26 @@ class CheapestArc:
         self.nodes = []
         self.queue = []
 
+    def __call__(self, D: np.ndarray):
+        n_nodes = D.shape[0]
+        assert D.shape[0] == D.shape[1], "D must be a squared matrix"
+        problem = Problem(n_nodes, D)
+        self.do(problem)
+        sol = Solution(self.tour)
+        return sol
+
     def calc_insertion(self, new: Node) -> float:
         cost = self.problem.D[self.tour.depot.prev.index, new.index]
         return cost
 
     def insert(self, new: Node):
-        new.prev = self.tour.depot.prev
-        self.tour.depot.prev.next = new
-        new.next = self.tour.depot
-        self.tour.depot.prev = new
+        self.tour.insert(new)
 
     def start(self):
         self.nodes = [Node(i) for i in range(self.problem.n_nodes)]
         self.queue = [n for n in self.nodes]
         first = self.rng.choice(len(self.queue))
         node = self.queue.pop(first)
-        node.next = node
-        node.prev = node
-        node.is_depot = True
         self.tour = Tour(node)
 
     def calc_candidates(self) -> List[float]:

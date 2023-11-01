@@ -11,10 +11,23 @@ class Tour:
     depot: Node
 
     def __init__(self, depot: Node) -> None:
+        depot.next = depot
+        depot.prev = depot
+        depot.is_depot = True
         self.depot = depot
 
     def __repr__(self) -> str:
         return str(self.solution)
+
+    @classmethod
+    def new(cls, seq: List[int]):
+        i = seq.pop(0)
+        node = Node(i, is_depot=True)
+        tour = cls(node)
+        for i in seq:
+            node = Node(i, is_depot=False)
+            tour.insert(node)
+        return tour
 
     @property
     def solution(self) -> List[int]:
@@ -45,6 +58,12 @@ class Tour:
     @property
     def cost(self):
         return self.depot.cum_dist
+
+    def insert(self, new: Node):
+        new.prev = self.depot.prev
+        self.depot.prev.next = new
+        new.next = self.depot
+        self.depot.prev = new
 
     def calc_costs(self, D: np.ndarray):
 

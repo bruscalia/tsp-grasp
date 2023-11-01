@@ -1,6 +1,8 @@
 # distutils: language = c++
+# cython: language_level=3, boundscheck=False, wraparound=False, cdivision=True, embedsignature=True, initializedcheck=False
 
 from libcpp cimport bool
+from libcpp.vector cimport vector
 
 import copy
 
@@ -10,10 +12,28 @@ from tspgrasp.node cimport Node
 cdef class Tour:
 
     def __init__(self, Node depot) -> None:
+        depot.next = depot
+        depot.prev = depot
+        depot.is_depot = True
         self.depot = depot
 
     def __repr__(self) -> str:
         return str(self.solution)
+
+    @classmethod
+    def new(cls, vector[int] seq):
+        cdef:
+            Node node
+            Tour tour
+            int i
+        i = seq.front()
+        seq.erase(seq.begin())
+        node = Node(i, is_depot=True)
+        tour = cls(node)
+        for i in seq:
+            node = Node(i, is_depot=False)
+            tour.insert(node)
+        return tour
 
     @property
     def solution(self):
@@ -44,6 +64,12 @@ cdef class Tour:
     @property
     def cost(self):
         return self.depot.cum_dist
+
+    cdef public void insert(Tour self, Node new) except *:
+        new.prev = self.depot.prev
+        self.depot.prev.next = new
+        new.next = self.depot
+        self.depot.prev = new
 
     cdef public void calc_costs(Tour self, double[:, :] D) except *:
 

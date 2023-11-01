@@ -6,9 +6,9 @@ A Greedy Randomized Adaptive Search Procedure (GRASP) algorithm designed for the
   <img src="./assets/tsp_1000.png" width="400" title="icon tsp">
 </p>
 
-## Use
+## Install
 
-To install the package, clone it from github and use `pip install`. Make sure Cython and numpy are also available in your python environment.
+To install the package, clone it from github and use `pip install` or `python setup.py install`. Make sure Cython and numpy are also available in your python environment.
 
 Alternatively, you can directly run:
 
@@ -17,6 +17,8 @@ pip install git+https://github.com/bruscalia/tsp-grasp
 ```
 
 Here is a minimum working example in which a symmetric distances matrix is produced from 2-dimensional coordinates.
+
+## Use
 
 ```python
 # Imports

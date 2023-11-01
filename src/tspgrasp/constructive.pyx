@@ -1,12 +1,13 @@
 # distutils: language = c++
-
-from abc import abstractmethod
+# cython: language_level=3, boundscheck=False, wraparound=False, cdivision=True, embedsignature=True, initializedcheck=False
 
 import numpy as np
 
 from tspgrasp.node cimport Node
 from tspgrasp.problem cimport Problem
 from tspgrasp.tour cimport Tour
+
+from tspgrasp.solution import Solution
 
 
 cdef class CheapestArc:
@@ -16,15 +17,20 @@ cdef class CheapestArc:
         self.nodes = []
         self.queue = []
 
+    def __call__(self, double[:, :] D):
+        cdef int n_nodes = D.shape[0]
+        assert D.shape[0] == D.shape[1], "D must be a squared matrix"
+        problem = Problem(n_nodes, D)
+        self.do(problem)
+        sol = Solution(self.tour)
+        return sol
+
     cdef double calc_insertion(CheapestArc self, Node new) except *:
         cost = self.problem.D[self.tour.depot.prev.index, new.index]
         return cost
 
     cdef void insert(CheapestArc self, Node new) except *:
-        new.prev = self.tour.depot.prev
-        self.tour.depot.prev.next = new
-        new.next = self.tour.depot
-        self.tour.depot.prev = new
+        self.tour.insert(new)
 
     cdef void start(CheapestArc self) except *:
         cdef:
@@ -34,9 +40,6 @@ cdef class CheapestArc:
         self.queue = [n for n in self.nodes]
         first = self.rng.choice(len(self.queue))
         node = self.queue.pop(first)
-        node.next = node
-        node.prev = node
-        node.is_depot = True
         self.tour = Tour(node)
 
     cdef object calc_candidates(CheapestArc self):
@@ -47,14 +50,13 @@ cdef class CheapestArc:
             costs.append(self.calc_insertion(node))
         return costs
 
-    @abstractmethod
-    def do(self, Problem problem):
+    cpdef public void do(self, Problem problem) except *:
         pass
 
 
 cdef class GreedyCheapestArc(CheapestArc):
 
-    def do(self, Problem problem):
+    cpdef public void do(self, Problem problem) except *:
         self.problem = problem
         self.start()
         while len(self.queue) > 0:
@@ -62,7 +64,6 @@ cdef class GreedyCheapestArc(CheapestArc):
             choice = np.argmin(costs)
             nd = self.queue.pop(choice)
             self.insert(nd)
-        return self.tour.cost
 
 
 cdef class SemiGreedy(CheapestArc):
@@ -73,7 +74,7 @@ cdef class SemiGreedy(CheapestArc):
             alpha = (alpha, alpha)
         self.alpha = alpha
 
-    def do(self, Problem problem):
+    cpdef public void do(self, Problem problem) except *:
         cdef:
             double alpha
         self.problem = problem
@@ -88,4 +89,3 @@ cdef class SemiGreedy(CheapestArc):
             choice = self.rng.choice(rcl)
             nd = self.queue.pop(choice)
             self.insert(nd)
-        return self.tour.cost
