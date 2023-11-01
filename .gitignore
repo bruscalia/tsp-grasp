@@ -8,3 +8,4 @@ experimental
 __pycache__/
 .pytest_cache
 src/**/*.cpp
+src/**/*.html
