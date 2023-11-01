@@ -2,78 +2,93 @@
 # cython: language_level=3, boundscheck=False, wraparound=False, cdivision=True, embedsignature=True
 
 from libcpp cimport bool
+from libcpp.random cimport mt19937, random_device, uniform_int_distribution
+from libcpp.set cimport set
+from libcpp.vector cimport vector
+
+import math
 
 import numpy as np
 
 from tspgrasp.node cimport Node
-from tspgrasp.problem import Problem
+from tspgrasp.problem cimport Problem
 from tspgrasp.tour cimport Tour
+from tspgrasp.random cimport RandomGen
 
 
 cdef class LocalSearch:
 
-    def __init__(self, seed=None) -> None:
-        self._rng = np.random.default_rng(seed)
-        self.n_moves = 0
+    def __cinit__(self):
         self._D = np.empty((0, 0), dtype=np.double)[:, :]
+        self.n_moves = 0
+        self._correlated_nodes = vector[vector[int]]()
+
+    def __init__(self, seed=None) -> None:
+        self._rng = RandomGen(seed)
 
     @property
     def tour(self) -> Tour:
         return self._tour
 
-    @property
-    def rng(self) -> np.random.Generator:
-        return self._rng
-
-    def do(self, tour: Tour, problem: Problem, max_iter=100000):
+    def do(self, Tour tour, Problem problem, int max_iter = 100000):
 
         cdef:
             int n_iter = 0
             bool proceed = True
             int v_index, u_index
             Node, u, v
+            vector[int] customers
+            vector[int] correlated_nodes
 
         self._tour = Tour(tour.depot)
         self._D = problem.D
+        self.initialize_corr_nodes()
         self.n_moves = 0
-        pool = sorted(self._tour.nodes, key=lambda x: x.index)
+        nodes = sorted(self._tour.nodes, key=lambda x: x.index)
+        customers = [n.index for n in nodes if not n.is_depot]
         while proceed and n_iter < max_iter:
             n_iter = n_iter + 1
             proceed = False or n_iter <= 1
-            candidates = list(range(len(pool)))
-            self._rng.shuffle(candidates)
-            for u_index in candidates:
-                u = pool[u_index]
-                if u.is_depot:
-                    continue
-                correlated_nodes = list(range(len(pool)))
-                correlated_nodes.remove(u_index)
+            self._rng.shuffle(customers)
+            for u_index in customers:
+                u = nodes[u_index]
+                correlated_nodes = self._correlated_nodes[u.index]
                 self._rng.shuffle(correlated_nodes)
                 for v_index in correlated_nodes:
-                    v = pool[v_index]
-                    if self.move_1(u, v):
-                        proceed = True
-                        continue
-                    elif self.move_2(u, v):
-                        proceed = True
-                        continue
-                    elif self.move_3(u, v):
-                        proceed = True
-                        continue
-                    elif self.move_4(u, v):
-                        proceed = True
-                        continue
-                    elif self.move_5(u, v):
-                        proceed = True
-                        continue
-                    elif self.move_6(u, v):
-                        proceed = True
-                        continue
-                    elif self.move_7(u, v):
+                    v = nodes[v_index]
+                    if self.moves(u, v):
                         proceed = True
                         continue
             if not proceed:
                 break
+
+    cdef bool moves(LocalSearch self, Node u, Node v) except *:
+        if self.move_1(u, v):
+            return True
+        elif self.move_2(u, v):
+            return True
+        elif self.move_3(u, v):
+            return True
+        elif self.move_4(u, v):
+            return True
+        elif self.move_5(u, v):
+            return True
+        elif self.move_6(u, v):
+            return True
+        elif self.move_7(u, v):
+            return True
+        elif v.prev.is_depot:
+            v = v.prev
+            if self.move_1(u, v):
+                return True
+            elif self.move_2(u, v):
+                return True
+            elif self.move_3(u, v):
+                return True
+            else:
+                return False
+        else:
+            return False
 
     cdef bool move_1(LocalSearch self, Node u, Node v) except *:
 
@@ -99,7 +114,7 @@ cdef class LocalSearch:
             cost = cs_u + cs_v
 
             # Update
-            if cost > -1e-4:
+            if self.eval_move(cost):
                 return False
             else:
                 self.insert_node(u, v)
@@ -131,7 +146,7 @@ cdef class LocalSearch:
             cost = cs_u + cs_v
 
             # Update
-            if cost > -1e-4:
+            if self.eval_move(cost):
                 return False
             else:
                 self.insert_node(u, v)
@@ -164,7 +179,7 @@ cdef class LocalSearch:
             cost = cs_u + cs_v
 
             # Update
-            if cost > -1e-4:
+            if self.eval_move(cost):
                 return False
             else:
                 self.insert_node(x, v)
@@ -197,7 +212,7 @@ cdef class LocalSearch:
             cost = cs_u + cs_v
 
             # Update
-            if cost > -1e-4:
+            if self.eval_move(cost):
                 return False
             else:
                 self.swap_node(u, v)
@@ -231,7 +246,7 @@ cdef class LocalSearch:
             cost = cs_u + cs_v
 
             # Update
-            if cost > -1e-4:
+            if self.eval_move(cost):
                 return False
             else:
                 self.swap_node(u, v)
@@ -265,7 +280,7 @@ cdef class LocalSearch:
             cost = cs_u + cs_v
 
             # Update
-            if cost > -1e-4:
+            if self.eval_move(cost):
                 return False
             else:
                 self.swap_node(u, v)
@@ -289,7 +304,7 @@ cdef class LocalSearch:
         y = v.next
 
         # Stop if u follows v
-        if (u.index == y.index) or (v.prev.is_depot):
+        if (u.index == y.index) or (v.prev.is_depot) or (u.next.index == v.index):
             return False
 
         # Else compute costs
@@ -299,7 +314,7 @@ cdef class LocalSearch:
                     + v.cum_rdist - x.cum_rdist
 
         # If poor move stop
-        if cost > -1e-4:
+        if self.eval_move(cost):
             return False
 
         # Moves
@@ -325,6 +340,9 @@ cdef class LocalSearch:
         self.n_moves = self.n_moves + 1
 
         return True
+
+    cdef bool eval_move(LocalSearch self, double cost) except *:
+        return cost > -0.0001
 
     cdef void insert_node(LocalSearch self, Node u, Node v) except *:
 
@@ -357,3 +375,38 @@ cdef class LocalSearch:
         u.next = v_succeeding
         v.prev = u_preceding
         v.next = u_succeeding
+
+    cdef void initialize_corr_nodes(LocalSearch self) except *:
+        cdef:
+            int n_nodes, mid_size, i, j
+            Node n
+            vector[vector[int]] corr_nodes
+            vector[int] customers
+
+        n_nodes = self._D.shape[0]
+        mid_size = math.ceil(self._D.shape[0] / 2)
+        corr_nodes = np.argpartition(self._D, mid_size, axis=1)[:, :mid_size].tolist()
+        corr_sets = start_corr_sets(n_nodes)
+        customers = [n.index for n in self._tour.nodes if not n.is_depot]
+        for i in customers:
+            for j in corr_nodes[i]:
+                if (j != self._tour.depot.index) and (i != j):
+                    corr_sets[i].insert(j)
+                    corr_sets[j].insert(i)
+        self._correlated_nodes = [list(corr_sets[i]) for i in range(n_nodes)]
+
+
+cdef vector[set[int]] start_corr_sets(int n_nodes):
+    cdef:
+        vector[set[int]] out
+        set[int] s
+        int i
+
+    i = 0
+    while i < n_nodes:
+        s = set[int]()
+        out.push_back(s)
+        i = i + 1
+
+    return out
+

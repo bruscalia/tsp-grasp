@@ -36,7 +36,6 @@ class Tour:
             sol.append(node)
             node = node.next
             first_it = False
-        sol.append(sol[0])
         return sol
 
     def copy(self):

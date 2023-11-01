@@ -1,7 +1,7 @@
 import numpy as np
 
-from tspgrasp.grasp import Grasp as GraspCython
-from tspgrasp.pure_python.constructive import SemiGreedy
+from tspgrasp.base import BaseGrasp
+from tspgrasp.pure_python.constructive import GreedyCheapestArc
 from tspgrasp.pure_python.local_search import LocalSearch
 from tspgrasp.pure_python.problem import Problem
 from tspgrasp.solution import Solution
@@ -11,24 +11,28 @@ MAX_MOVES = 100000
 MAX_ITER = 10000
 
 
-class GrasPy(GraspCython):
+class GrasPy(BaseGrasp):
 
-    def __init__(self, alpha=1.0, seed=None):
-        self.alpha = alpha
+    def __init__(self, constructive=None, local_search=None, seed=None):
         self.seed = seed
         self.costs = []
-        self.constructive = SemiGreedy(alpha=self.alpha, seed=seed)
-        self.local_search = LocalSearch(seed=seed)
+        if constructive is None:
+            constructive = GreedyCheapestArc(seed=seed)
+        if local_search is None:
+            local_search = LocalSearch(seed=seed)
+        self.constructive = constructive
+        self.local_search = local_search
 
     def __call__(
         self,
         D: np.ndarray,
-        max_iter=MAX_ITER,
-        max_moves=MAX_MOVES,
+        max_iter: int = MAX_ITER,
+        max_moves: int = MAX_MOVES,
         time_limit: float = float("inf"),
         target: float = -float("inf"),
+        verbose: bool = False
     ) -> Solution:
-         # Initialize problem
+        # Initialize problem
         n_nodes = D.shape[0]
         assert D.shape[0] == D.shape[1], "D must be a squared matrix"
         problem = Problem(n_nodes, D)
@@ -37,6 +41,7 @@ class GrasPy(GraspCython):
             max_iter=max_iter,
             max_moves=max_moves,
             time_limit=time_limit,
-            target=target
+            target=target,
+            verbose=verbose
         )
         return sol
