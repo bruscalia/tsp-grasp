@@ -38,10 +38,6 @@ cdef class CheapestArc:
     cdef void insert(CheapestArc self, Node new) except *:
         self.tour.insert(new)
 
-    def pystart(self, D):
-        self.problem = Problem(D.shape[0], D)
-        self.start()
-
     cdef void start(CheapestArc self) except *:
         cdef:
             Node node
@@ -99,7 +95,8 @@ cdef class SemiGreedy(CheapestArc):
         super().__init__(seed)
         if isinstance(alpha, float) or isinstance(alpha, int):
             alpha = (alpha, alpha)
-        self.alpha = alpha
+        self.alpha[0] = alpha[0]
+        self.alpha[1] = alpha[1]
 
     cpdef public void do(self, Problem problem) except *:
         cdef:
@@ -112,8 +109,9 @@ cdef class SemiGreedy(CheapestArc):
 
         self.problem = problem
         self.start()
-        qsize = self.queue.size()
-        alpha = self.alpha[0] + self.rng.random() * (self.alpha[1] - self.alpha[0]) - 1e-6
+        qsize = <int>self.queue.size()
+        alpha = self.alpha[0] + self.rng.random() * (self.alpha[1] - self.alpha[0])
+        alpha = clip(alpha, 0.0, 1.0)
         while qsize > 0:
             costs = self.calc_candidates()
             worst = cmax(costs)
@@ -129,3 +127,11 @@ cdef class SemiGreedy(CheapestArc):
             node = self.nodes[idx]
             self.insert(node)
             qsize = self.queue.size()
+
+
+cdef double clip(double value, double l, double u) except *:
+    if value <= l:
+        value = l
+    elif value >= u:
+        value = u
+    return value

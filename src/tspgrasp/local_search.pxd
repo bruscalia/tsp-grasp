@@ -25,8 +25,8 @@ cdef class LocalSearch:
         double[:, :] _D
         vector[vector[int]] _correlated_nodes
 
-    cpdef void _prepare_search(LocalSearch self, Tour tour) except *
-    cpdef bool moves(LocalSearch self, Node u, Node v) except *
+    cdef void _prepare_search(LocalSearch self, Tour tour) except *
+    cdef bool moves(LocalSearch self, Node u, Node v) except *
     cdef bool move_1(LocalSearch self, Node u, Node v) except *
     cdef bool move_2(LocalSearch self, Node u, Node v) except *
     cdef bool move_3(LocalSearch self, Node u, Node v) except *

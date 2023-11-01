@@ -23,5 +23,5 @@ cdef class SimulatedAnnealing(LocalSearch):
         double T
         double decay
 
-    cpdef void _prepare_search(SimulatedAnnealing self, Tour tour) except *
+    cdef void _prepare_search(SimulatedAnnealing self, Tour tour) except *
     cdef bool eval_move(SimulatedAnnealing self, double cost) except *

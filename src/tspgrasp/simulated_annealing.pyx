@@ -49,19 +49,15 @@ cdef class SimulatedAnnealing(LocalSearch):
                     v = nodes[v_index]
                     if self.moves(u, v):
                         proceed = True
+                        self.T = self.T * self.decay
                         continue
             if not proceed:
                 break
 
-    cpdef bool moves(SimulatedAnnealing self, Node u, Node v) except *:
-        if super(SimulatedAnnealing, self).moves(u, v):
-            self.T = self.T * self.decay
-            return True
-        else:
-            return False
-
-    cpdef void _prepare_search(SimulatedAnnealing self, Tour tour):
-        super(SimulatedAnnealing, self)._prepare_search(tour)
+    cdef void _prepare_search(SimulatedAnnealing self, Tour tour):
+        self.n_moves = 0
+        self.tour = tour
+        self._initialize_corr_nodes()
         self.T = self.T_start
 
     cdef bool eval_move(SimulatedAnnealing self, double cost) except *:

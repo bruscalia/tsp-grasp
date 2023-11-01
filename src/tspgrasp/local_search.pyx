@@ -101,12 +101,12 @@ cdef class LocalSearch:
     def set_problem(LocalSearch self, Problem problem):
         self._D = problem.D
 
-    cpdef void _prepare_search(LocalSearch self, Tour tour) except *:
+    cdef void _prepare_search(LocalSearch self, Tour tour) except *:
         self.n_moves = 0
         self.tour = tour
         self._initialize_corr_nodes()
 
-    cpdef bool moves(LocalSearch self, Node u, Node v) except *:
+    cdef bool moves(LocalSearch self, Node u, Node v) except *:
         if self.move_1(u, v):
             return True
         elif self.move_2(u, v):

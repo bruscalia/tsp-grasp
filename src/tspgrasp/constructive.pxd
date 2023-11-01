@@ -34,4 +34,4 @@ cdef class GreedyCheapestArc(CheapestArc):
 cdef class SemiGreedy(CheapestArc):
 
     cdef:
-        object alpha
+        double alpha[2]
