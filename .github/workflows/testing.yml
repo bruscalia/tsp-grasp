@@ -29,7 +29,7 @@ jobs:
           rm -rf tspgrasp
       - name: Check Compilation
         run: |
-          python -c "from tspgrasp.utils import cythonized;print('Compiled Extensions: ', cythonized)"
+          python -c "from tspgrasp import cythonized;print('Compiled Extensions: ', cythonized)"
       - name: Run Tests
         run: |
           pytest -v --maxfail 1 --no-header -m "not long"

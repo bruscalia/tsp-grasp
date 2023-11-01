@@ -2,7 +2,6 @@
 # cython: language_level=3, boundscheck=False, wraparound=False, cdivision=True, embedsignature=True, initializedcheck=False
 
 from libcpp cimport bool
-from libcpp.random cimport mt19937
 from libcpp.set cimport set
 from libcpp.vector cimport vector
 

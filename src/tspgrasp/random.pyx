@@ -62,7 +62,7 @@ cdef int* random_choice(vector[int] &v, mt19937 &rng) except *:
 
     # Generate a random index between 0 and n - 1
     dist = uniform_int_distribution[int](0, n - 1)
-    random_index - dist(rng)
+    random_index = dist(rng)
 
     # Return the element at the random index
     return &v[random_index]

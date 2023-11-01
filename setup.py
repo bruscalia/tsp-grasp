@@ -130,7 +130,7 @@ if not params.nolibs:
         print('*' * 75)
         print("External cython modules found.")
         print("To verify compilation success run:")
-        print("from tspgrasp.utils import cythonized")
+        print("from tspgrasp import cythonized")
         print("This variable will be True to mark compilation success;")
         print("If no compilation occurs, .py files will be used instead, which provide the same results but with worse computational time.")
         print('*' * 75)
@@ -147,7 +147,7 @@ try:
     print('*' * 75)
     print("Installation successful at the first attempt.")
     print("To verify compilation success run:")
-    print("from tspgrasp.utils import cythonized")
+    print("from tspgrasp import cythonized")
     print('*' * 75)
 except:
     print('*' * 75)

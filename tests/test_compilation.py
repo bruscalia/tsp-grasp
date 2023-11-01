@@ -1,3 +1,3 @@
 def test_compilation():
-    from tspgrasp.utils import cythonized
+    from tspgrasp import cythonized
     assert cythonized, "Compilation failed"
