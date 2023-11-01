@@ -1,4 +1,5 @@
 import numpy as np
+from tspgrasp.pure_python.node import Node
 
 from tspgrasp.pure_python.problem import Problem
 from tspgrasp.pure_python.tour import Tour
@@ -14,15 +15,9 @@ class SimulatedAnnealing(LocalSearch):
         self.T = T_start
         self.decay = decay
 
-    def do(self, tour: Tour, problem: Problem, max_iter=100000):
-        n_iter = 0
-        proceed = True
-        self._tour = Tour(tour.depot)
-        self._D = problem.D
-        self.initialize_corr_nodes()
-        self.n_moves = 0
-        self.T = self.T_start
-        nodes = sorted(self._tour.nodes, key=lambda x: x.index)
+    def do(self, tour: Tour, max_iter: int = 100000):
+        self._prepare_search(tour)
+        nodes = sorted(self.tour.nodes, key=lambda x: x.index)
         customers = [n.index for n in nodes if not n.is_depot]
         while proceed and n_iter < max_iter and self.T >= self.T_final:
             n_iter = n_iter + 1
@@ -36,10 +31,20 @@ class SimulatedAnnealing(LocalSearch):
                     v = nodes[v_index]
                     if self.moves(u, v):
                         proceed = True
-                        self.T = self.T * self.decay
                         continue
             if not proceed:
                 break
+
+    def moves(self, u: Node, v: Node) -> bool:
+        if super().moves(u, v):
+            self.T = self.T * self.decay
+            return True
+        else:
+            return False
+
+    def _prepare_search(self, tour: Tour):
+        super()._prepare_search(tour)
+        self.T = self.T_start
 
     def eval_move(self, cost: float):
         make_move = (cost <= -0.0001) or (np.exp(-(cost + self.T_final)/self.T) > self._rng.random())

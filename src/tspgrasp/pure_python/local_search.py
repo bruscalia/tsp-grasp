@@ -12,27 +12,14 @@ class LocalSearch:
     _correlated_nodes: list
 
     def __init__(self, seed=None) -> None:
-        self._rng = np.random.default_rng(seed)
         self.n_moves = 0
+        self._rng = np.random.default_rng(seed)
         self._D = np.empty((0, 0), dtype=np.double)
         self._correlated_nodes = []
 
-    @property
-    def tour(self) -> Tour:
-        return self._tour
-
-    @property
-    def rng(self) -> np.random.Generator:
-        return self._rng
-
-    def do(self, tour: Tour, problem: Problem, max_iter=100000):
-        n_iter = 0
-        proceed = True
-        self._tour = Tour(tour.depot)
-        self._D = problem.D
-        self.initialize_corr_nodes()
-        self.n_moves = 0
-        nodes = sorted(self._tour.nodes, key=lambda x: x.index)
+    def do(self, tour: Tour, max_iter: int = 100000):
+        self._prepare_search(tour)
+        nodes = sorted(self.tour.nodes, key=lambda x: x.index)
         customers = [n.index for n in nodes if not n.is_depot]
         while proceed and n_iter < max_iter:
             n_iter = n_iter + 1
@@ -49,6 +36,14 @@ class LocalSearch:
                         continue
             if not proceed:
                 break
+
+    def set_problem(self, problem: Problem):
+        self._D = problem.D
+
+    def _prepare_search(self, tour: Tour):
+        self.n_moves = 0
+        self.tour = tour
+        self._initialize_corr_nodes()
 
     def moves(self, u: Node, v: Node) -> bool:
         if self.move_1(u, v):
@@ -101,7 +96,7 @@ class LocalSearch:
                 return False
             else:
                 self.insert_node(u, v)
-                self._tour.calc_costs(self._D)
+                self.tour.calc_costs(self._D)
                 self.n_moves = self.n_moves + 1
         return True
 
@@ -129,7 +124,7 @@ class LocalSearch:
             else:
                 self.insert_node(u, v)
                 self.insert_node(x, u)
-                self._tour.calc_costs(self._D)
+                self.tour.calc_costs(self._D)
                 self.n_moves = self.n_moves + 1
         return True
 
@@ -157,7 +152,7 @@ class LocalSearch:
             else:
                 self.insert_node(x, v)
                 self.insert_node(u, x)
-                self._tour.calc_costs(self._D)
+                self.tour.calc_costs(self._D)
                 self.n_moves = self.n_moves + 1
         return True
 
@@ -184,7 +179,7 @@ class LocalSearch:
                 return False
             else:
                 self.swap_node(u, v)
-                self._tour.calc_costs(self._D)
+                self.tour.calc_costs(self._D)
                 self.n_moves = self.n_moves + 1
 
         return True
@@ -214,7 +209,7 @@ class LocalSearch:
             else:
                 self.swap_node(u, v)
                 self.insert_node(x, u)
-                self._tour.calc_costs(self._D)
+                self.tour.calc_costs(self._D)
                 self.n_moves = self.n_moves + 1
         return True
 
@@ -243,7 +238,7 @@ class LocalSearch:
             else:
                 self.swap_node(u, v)
                 self.swap_node(x, y)
-                self._tour.calc_costs(self._D)
+                self.tour.calc_costs(self._D)
                 self.n_moves = self.n_moves + 1
         return True
 
@@ -286,7 +281,7 @@ class LocalSearch:
         y.prev = x
 
         # Update
-        self._tour.calc_costs(self._D)
+        self.tour.calc_costs(self._D)
         self.n_moves = self.n_moves + 1
 
         return True
@@ -326,15 +321,15 @@ class LocalSearch:
         v.prev = u_preceding
         v.next = u_succeeding
 
-    def initialize_corr_nodes(self):
+    def _initialize_corr_nodes(self):
         n_nodes = self._D.shape[0]
         mid_size = math.ceil(self._D.shape[0] / 2)
         corr_nodes = np.argpartition(self._D, mid_size, axis=1)[:, :mid_size].tolist()
         corr_sets = [set() for _ in range(n_nodes)]
-        customers = [n.index for n in self._tour.nodes if not n.is_depot]
+        customers = [n.index for n in self.tour.nodes if not n.is_depot]
         for i in customers:
             for j in corr_nodes[i]:
-                if (j != self._tour.depot.index) and (i != j):
+                if (j != self.tour.depot.index) and (i != j):
                     corr_sets[i].add(j)
                     corr_sets[j].add(i)
         self._correlated_nodes = [list(corr_sets[i]) for i in range(n_nodes)]

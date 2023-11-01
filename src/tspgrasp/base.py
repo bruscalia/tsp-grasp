@@ -1,7 +1,7 @@
 from abc import abstractmethod
 import time
 import logging
-from typing import Any, List
+from typing import List
 
 import numpy as np
 
@@ -121,6 +121,8 @@ class BaseGrasp:
             - tour : List[int] (depot is included twice)
             - cost : float
         """
+        # Set problem on local search
+        self.local_search.set_problem(problem)
 
         # Initialize parameters
         best_cost = np.inf
@@ -137,7 +139,7 @@ class BaseGrasp:
                 break
 
             self.constructive.do(problem)
-            self.local_search.do(self.constructive.tour, problem, max_iter=max_moves)
+            self.local_search.do(self.constructive.tour, max_iter=max_moves)
             self.costs.append(self.constructive.tour.cost)
 
             # Replace if it overcomes best so far

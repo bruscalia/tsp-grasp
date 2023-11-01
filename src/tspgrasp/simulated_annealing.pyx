@@ -1,5 +1,4 @@
 # distutils: language = c++
-# cython: language_level=3, boundscheck=False, wraparound=False, cdivision=True, embedsignature=True
 
 from libcpp cimport bool
 from libc.math cimport exp
@@ -7,14 +6,12 @@ from libcpp.random cimport mt19937, uniform_int_distribution, uniform_real_distr
 from libcpp.set cimport set
 from libcpp.vector cimport vector
 
-import math
-
 import numpy as np
 
+from tspgrasp.local_search cimport LocalSearch
 from tspgrasp.node cimport Node
 from tspgrasp.problem import Problem
 from tspgrasp.tour cimport Tour
-from tspgrasp.local_search cimport LocalSearch
 
 
 cdef class SimulatedAnnealing(LocalSearch):
@@ -26,7 +23,7 @@ cdef class SimulatedAnnealing(LocalSearch):
         self.T = T_start
         self.decay = decay
 
-    def do(self, tour: Tour, problem: Problem, max_iter=100000):
+    def do(self, Tour tour, int max_iter = 100000):
 
         cdef:
             int n_iter = 0
@@ -36,12 +33,8 @@ cdef class SimulatedAnnealing(LocalSearch):
             vector[int] customers
             vector[int] correlated_nodes
 
-        self._tour = Tour(tour.depot)
-        self._D = problem.D
-        self.initialize_corr_nodes()
-        self.n_moves = 0
-        self.T = self.T_start
-        nodes = sorted(self._tour.nodes, key=lambda x: x.index)
+        self._prepare_search(tour)
+        nodes = sorted(self.tour.nodes, key=lambda x: x.index)
         customers = [n.index for n in nodes if not n.is_depot]
         while proceed and n_iter < max_iter and self.T >= self.T_final:
             n_iter = n_iter + 1
@@ -55,10 +48,20 @@ cdef class SimulatedAnnealing(LocalSearch):
                     v = nodes[v_index]
                     if self.moves(u, v):
                         proceed = True
-                        self.T = self.T * self.decay
                         continue
             if not proceed:
                 break
+
+    cpdef bool moves(SimulatedAnnealing self, Node u, Node v) except *:
+        if super(SimulatedAnnealing, self).moves(u, v):
+            self.T = self.T * self.decay
+            return True
+        else:
+            return False
+
+    cpdef void _prepare_search(SimulatedAnnealing self, Tour tour):
+        super(SimulatedAnnealing, self)._prepare_search(tour)
+        self.T = self.T_start
 
     cdef bool eval_move(SimulatedAnnealing self, double cost) except *:
         cdef:

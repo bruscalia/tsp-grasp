@@ -1,9 +1,8 @@
-import time
 from typing import Any
 
 import numpy as np
 
-from tspgrasp.base import MAX_ITER, MAX_MOVES, BaseGrasp
+from tspgrasp.base import BaseGrasp
 from tspgrasp.problem import Problem
 from tspgrasp.constructive import GreedyCheapestArc
 from tspgrasp.local_search import LocalSearch

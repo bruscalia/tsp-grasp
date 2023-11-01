@@ -1,36 +1,36 @@
 # distutils: language = c++
-# cython: language_level=3, boundscheck=False, wraparound=False, cdivision=True, embedsignature=True
 
 from libcpp cimport bool
-from libcpp.random cimport mt19937, random_device, uniform_int_distribution
+from libcpp.random cimport mt19937
 from libcpp.set cimport set
 from libcpp.vector cimport vector
-
-import math
 
 import numpy as np
 
 from tspgrasp.node cimport Node
 from tspgrasp.problem cimport Problem
-from tspgrasp.tour cimport Tour
 from tspgrasp.random cimport RandomGen
+from tspgrasp.tour cimport Tour
+
+
+cdef extern from "<cmath>" namespace "std":
+    double ceil(double x)
+
+cdef int compute_ceil(double value):
+    return <int>ceil(value)
 
 
 cdef class LocalSearch:
 
     def __cinit__(self):
-        self._D = np.empty((0, 0), dtype=np.double)[:, :]
         self.n_moves = 0
+        self._D = np.empty((0, 0), dtype=np.double)[:, :]
         self._correlated_nodes = vector[vector[int]]()
 
     def __init__(self, seed=None) -> None:
         self._rng = RandomGen(seed)
 
-    @property
-    def tour(self) -> Tour:
-        return self._tour
-
-    def do(self, Tour tour, Problem problem, int max_iter = 100000):
+    def do(self, Tour tour, int max_iter = 100000):
 
         cdef:
             int n_iter = 0
@@ -40,11 +40,8 @@ cdef class LocalSearch:
             vector[int] customers
             vector[int] correlated_nodes
 
-        self._tour = Tour(tour.depot)
-        self._D = problem.D
-        self.initialize_corr_nodes()
-        self.n_moves = 0
-        nodes = sorted(self._tour.nodes, key=lambda x: x.index)
+        self._prepare_search(tour)
+        nodes = sorted(self.tour.nodes, key=lambda x: x.index)
         customers = [n.index for n in nodes if not n.is_depot]
         while proceed and n_iter < max_iter:
             n_iter = n_iter + 1
@@ -62,7 +59,15 @@ cdef class LocalSearch:
             if not proceed:
                 break
 
-    cdef bool moves(LocalSearch self, Node u, Node v) except *:
+    def set_problem(LocalSearch self, Problem problem):
+        self._D = problem.D
+
+    cpdef void _prepare_search(LocalSearch self, Tour tour) except *:
+        self.n_moves = 0
+        self.tour = tour
+        self._initialize_corr_nodes()
+
+    cpdef bool moves(LocalSearch self, Node u, Node v) except *:
         if self.move_1(u, v):
             return True
         elif self.move_2(u, v):
@@ -118,7 +123,7 @@ cdef class LocalSearch:
                 return False
             else:
                 self.insert_node(u, v)
-                self._tour.calc_costs(self._D)
+                self.tour.calc_costs(self._D)
                 self.n_moves = self.n_moves + 1
         return True
 
@@ -151,7 +156,7 @@ cdef class LocalSearch:
             else:
                 self.insert_node(u, v)
                 self.insert_node(x, u)
-                self._tour.calc_costs(self._D)
+                self.tour.calc_costs(self._D)
                 self.n_moves = self.n_moves + 1
         return True
 
@@ -184,7 +189,7 @@ cdef class LocalSearch:
             else:
                 self.insert_node(x, v)
                 self.insert_node(u, x)
-                self._tour.calc_costs(self._D)
+                self.tour.calc_costs(self._D)
                 self.n_moves = self.n_moves + 1
         return True
 
@@ -216,7 +221,7 @@ cdef class LocalSearch:
                 return False
             else:
                 self.swap_node(u, v)
-                self._tour.calc_costs(self._D)
+                self.tour.calc_costs(self._D)
                 self.n_moves = self.n_moves + 1
 
         return True
@@ -251,7 +256,7 @@ cdef class LocalSearch:
             else:
                 self.swap_node(u, v)
                 self.insert_node(x, u)
-                self._tour.calc_costs(self._D)
+                self.tour.calc_costs(self._D)
                 self.n_moves = self.n_moves + 1
         return True
 
@@ -285,7 +290,7 @@ cdef class LocalSearch:
             else:
                 self.swap_node(u, v)
                 self.swap_node(x, y)
-                self._tour.calc_costs(self._D)
+                self.tour.calc_costs(self._D)
                 self.n_moves = self.n_moves + 1
         return True
 
@@ -336,7 +341,7 @@ cdef class LocalSearch:
         y.prev = x
 
         # Update
-        self._tour.calc_costs(self._D)
+        self.tour.calc_costs(self._D)
         self.n_moves = self.n_moves + 1
 
         return True
@@ -376,7 +381,7 @@ cdef class LocalSearch:
         v.prev = u_preceding
         v.next = u_succeeding
 
-    cdef void initialize_corr_nodes(LocalSearch self) except *:
+    cdef void _initialize_corr_nodes(LocalSearch self) except *:
         cdef:
             int n_nodes, mid_size, i, j
             Node n
@@ -384,13 +389,13 @@ cdef class LocalSearch:
             vector[int] customers
 
         n_nodes = self._D.shape[0]
-        mid_size = math.ceil(self._D.shape[0] / 2)
+        mid_size = compute_ceil(self._D.shape[0] / 2)
         corr_nodes = np.argpartition(self._D, mid_size, axis=1)[:, :mid_size].tolist()
         corr_sets = start_corr_sets(n_nodes)
-        customers = [n.index for n in self._tour.nodes if not n.is_depot]
+        customers = [n.index for n in self.tour.nodes if not n.is_depot]
         for i in customers:
             for j in corr_nodes[i]:
-                if (j != self._tour.depot.index) and (i != j):
+                if (j != self.tour.depot.index) and (i != j):
                     corr_sets[i].insert(j)
                     corr_sets[j].insert(i)
         self._correlated_nodes = [list(corr_sets[i]) for i in range(n_nodes)]

@@ -1,5 +1,4 @@
 # distutils: language = c++
-# cython: language_level=3, boundscheck=False, wraparound=False, cdivision=True, embedsignature=True
 
 from libcpp.random cimport mt19937
 from libcpp.vector cimport vector

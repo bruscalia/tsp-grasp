@@ -1,4 +1,5 @@
 import copy
+from typing import List
 
 import numpy as np
 
@@ -16,7 +17,7 @@ class Tour:
         return str(self.solution)
 
     @property
-    def solution(self):
+    def solution(self) -> List[int]:
         sol = []
         first_it = True
         node = self.depot
@@ -28,7 +29,7 @@ class Tour:
         return sol
 
     @property
-    def nodes(self):
+    def nodes(self) -> List[Node]:
         sol = []
         first_it = True
         node = self.depot
