@@ -68,7 +68,7 @@ class BaseGrasp:
             Maximum number of local search moves, by default 100000
 
         time_limit : float, optional
-            Time limit to interrupt the solution, by default float("inf")
+            Time limit (s) to interrupt the solution, by default float("inf")
 
         target : float, optional
             Taget value for objective which interrupts optimization process, by default -float("inf")

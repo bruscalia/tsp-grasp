@@ -54,15 +54,19 @@ class GreedyCheapestArc(tspconstr.GreedyCheapestArc):
 
 class SemiGreedy(tspconstr.SemiGreedy):
 
-    def __init__(self, seed: int = None):
-        """Greedy adaptive construction for the TSP inserting the next node at the end of the partial tour.
+    def __init__(self, alpha=(0.0, 1.0), seed=None):
+        """Greedy-randomized constructive heuristic for the TSP.
 
         Parameters
         ----------
+        alpha : tuple, optional
+            Alpha parameter - randomly generated at each iteration between range or fixed scalar.
+            Use values closer to one for a more greedy approach. By default (0.0, 1.0).
+
         seed : int, optional
             Random generator seed (differs behavior from cython to python), by default None
         """
-        super().__init__(seed)
+        super().__init__(alpha=alpha, seed=seed)
 
     def __call__(self, D: np.ndarray) -> Solution:
         """Solves a TSP based on a pairwise distances matrix.

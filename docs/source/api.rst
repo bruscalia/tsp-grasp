@@ -3,6 +3,8 @@
 tspgrasp
 ========
 
+The operators listed here are intended to be easily available for the user, so they can be imported directy from `tspgrap`.
+
 Grasp
 -----
 

@@ -42,7 +42,7 @@ Use
    # Imports
    import numpy as np
    from scipy.spatial.distance import pdist, squareform
-   from tspgrasp.grasp import Grasp
+   from tspgrasp import Grasp
 
    # Create distances matrix
    X = np.random.random((100, 2))

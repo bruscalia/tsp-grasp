@@ -25,7 +25,7 @@ Here is a minimum working example in which a symmetric distances matrix is produ
 # Imports
 import numpy as np
 from scipy.spatial.distance import pdist, squareform
-from tspgrasp.grasp import Grasp
+from tspgrasp import Grasp
 ```
 
 ```python
