@@ -30,7 +30,7 @@ class BaseGrasp:
         Parameters
         ----------
         constructive : Any, optional
-            Greedy constructive heuristic. Current options available are `GreedyCheapestArc`
+            Constructive heuristic. Current options available are `GreedyCheapestArc`
             and `SemiGreedy`, which should be instantiated beforehand.
             By default None, which instantiates a `GreedyCheapestArc` operator.
 
