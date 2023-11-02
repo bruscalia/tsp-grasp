@@ -7,6 +7,7 @@ Grasp
 -----
 
 .. autoclass:: tspgrasp.grasp.Grasp
+   :members: costs
    :special-members: __call__
 
 .. autoclass:: tspgrasp.grasp.Solution

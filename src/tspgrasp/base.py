@@ -21,6 +21,7 @@ class BaseGrasp:
     constructive: object
     local_search: object
     costs: List[float]
+    """List of costs generated throughout iterations"""
 
     @abstractmethod
     def __init__(self, constructive=None, local_search=None, seed=None):

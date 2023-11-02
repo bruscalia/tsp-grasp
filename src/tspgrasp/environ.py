@@ -24,7 +24,8 @@ except ModuleNotFoundError as e:
 class GreedyCheapestArc(tspconstr.GreedyCheapestArc):
 
     def __init__(self, seed: int = None):
-        """Greedy adaptive construction for the TSP inserting the next node at the end of the partial tour
+        """Greedy adaptive construction for the TSP inserting the next node at the end of the partial tour.
+        Depot nodes are randomly chosen.
 
         Parameters
         ----------
@@ -34,7 +35,7 @@ class GreedyCheapestArc(tspconstr.GreedyCheapestArc):
         super().__init__(seed)
 
     def __call__(self, D: np.ndarray) -> Solution:
-        """Solves a TSP based on a pairwise distances matrix
+        """Solves a TSP based on a pairwise distances matrix.
 
         Parameters
         ----------
@@ -54,7 +55,7 @@ class GreedyCheapestArc(tspconstr.GreedyCheapestArc):
 class SemiGreedy(tspconstr.SemiGreedy):
 
     def __init__(self, seed: int = None):
-        """Greedy adaptive construction for the TSP inserting the next node at the end of the partial tour
+        """Greedy adaptive construction for the TSP inserting the next node at the end of the partial tour.
 
         Parameters
         ----------
@@ -64,7 +65,7 @@ class SemiGreedy(tspconstr.SemiGreedy):
         super().__init__(seed)
 
     def __call__(self, D: np.ndarray) -> Solution:
-        """Solves a TSP based on a pairwise distances matrix
+        """Solves a TSP based on a pairwise distances matrix.
 
         Parameters
         ----------
@@ -84,7 +85,7 @@ class SemiGreedy(tspconstr.SemiGreedy):
 class LocalSearch(tspls.LocalSearch):
 
     def __init__(self, seed: int = None):
-        """Local Search (VNS with first improvement) implementation for TSP
+        """Local Search (VNS with first improvement) implementation for TSP.
 
         Parameters
         ----------
@@ -120,7 +121,7 @@ class LocalSearch(tspls.LocalSearch):
 class SimulatedAnnealing(tspsa.SimulatedAnnealing):
 
     def __init__(self, T_start=10.0, T_final=0.001, decay=0.99, seed=None):
-        """Simulated Annealing for the TSP using a VNS
+        """Simulated Annealing for the TSP using a VNS.
 
         Parameters
         ----------
@@ -139,7 +140,7 @@ class SimulatedAnnealing(tspsa.SimulatedAnnealing):
         super().__init__(T_start, T_final, decay, seed)
 
     def __call__(self, seq: List[int], D: np.ndarray, max_iter=100000):
-        """Solve a TSP based on an initial solution and a distance matrix
+        """Solve a TSP based on an initial solution and a distance matrix.
 
         Parameters
         ----------

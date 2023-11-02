@@ -41,13 +41,9 @@ if __name__ == "__main__":
     greedy = HistoryGreedy(seed=12)
     sol_greedy = greedy(D)
 
-    breakpoint()
-
     # Local search
     ls = HistoryLS(seed=12)
     ls(sol_greedy.tour[:-1], D)
-
-    breakpoint()
 
     greedy_frames = []
     for j, s in enumerate(greedy.history):
