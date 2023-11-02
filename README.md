@@ -42,8 +42,19 @@ print(f"Cost: {sol.cost}")
 print(f"Tour: {sol.tour}")
 ```
 
+## Theory
+
+Greedy Randomized Adaptive Search Procedures (GRASP) are metaheuristics constituted by a hybridization of a semi-greedy procedure with a local search method. For more details please refer to Resende & Ribeiro (2016).
+
+Local search moves implemented were based on the work of Vidal et al. (2022).
+
+
 ## Contact
 
 You can reach out to me at bruscalia12@gmail.com
 
 ## References
+
+Resende, M. G., & Ribeiro, C. C. (2016). Optimization by GRASP. Springer Science+ Business Media New York. https://doi.org/10.1007/978-1-4939-6530-4
+
+Vidal, T. (2022). Hybrid genetic search for the CVRP: Open-source implementation and SWAP* neighborhood. Computers & Operations Research, 140, 105643. https://doi.org/10.1016/j.cor.2021.105643
