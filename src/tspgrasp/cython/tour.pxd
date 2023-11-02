@@ -1,7 +1,7 @@
 # distutils: language = c++
 # cython: language_level=3, boundscheck=False, wraparound=False, cdivision=True, embedsignature=True, initializedcheck=False
 
-from tspgrasp.node cimport Node
+from tspgrasp.cython.node cimport Node
 
 
 cdef class Tour:

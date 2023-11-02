@@ -9,10 +9,10 @@ from libcpp.vector cimport vector
 
 import numpy as np
 
-from tspgrasp.local_search cimport LocalSearch
-from tspgrasp.node cimport Node
-from tspgrasp.problem import Problem
-from tspgrasp.tour cimport Tour
+from tspgrasp.cython.local_search cimport LocalSearch
+from tspgrasp.cython.node cimport Node
+from tspgrasp.cython.problem cimport Problem
+from tspgrasp.cython.tour cimport Tour
 
 
 cdef class SimulatedAnnealing(LocalSearch):

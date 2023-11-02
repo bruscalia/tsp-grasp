@@ -7,10 +7,10 @@ from libcpp.vector cimport vector
 
 import numpy as np
 
-from tspgrasp.node cimport Node
-from tspgrasp.problem cimport Problem
-from tspgrasp.random cimport RandomGen
-from tspgrasp.tour cimport Tour
+from tspgrasp.cython.node cimport Node
+from tspgrasp.cython.problem cimport Problem
+from tspgrasp.cython.random cimport RandomGen
+from tspgrasp.cython.tour cimport Tour
 
 
 cdef class LocalSearch:
@@ -21,10 +21,11 @@ cdef class LocalSearch:
         Tour tour
 
     cdef:
-        RandomGen _rng
+        RandomGen rng
         double[:, :] _D
         vector[vector[int]] _correlated_nodes
 
+    cpdef void set_problem(LocalSearch self, Problem problem) except *
     cdef void _prepare_search(LocalSearch self, Tour tour) except *
     cdef bool moves(LocalSearch self, Node u, Node v) except *
     cdef bool move_1(LocalSearch self, Node u, Node v) except *

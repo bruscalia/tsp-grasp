@@ -1,0 +1,9 @@
+ipykernel
+sphinx
+sphinx_rtd_theme
+sphinxcontrib-bibtex
+pandoc
+numpydoc
+nbsphinx
+matplotlib
+urllib3==1.*

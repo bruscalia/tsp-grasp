@@ -3,9 +3,9 @@ from typing import List
 
 import numpy as np
 
-from tspgrasp.pure_python.node import Node
-from tspgrasp.pure_python.problem import Problem
-from tspgrasp.pure_python.tour import Tour
+from tspgrasp.pypure.node import Node
+from tspgrasp.pypure.problem import Problem
+from tspgrasp.pypure.tour import Tour
 from tspgrasp.solution import Solution
 
 
@@ -23,11 +23,12 @@ class CheapestArc:
         self.nodes = []
         self.queue = []
 
-    def __call__(self, D: np.ndarray):
+    def __call__(self, D: np.ndarray) -> Solution:
         n_nodes = D.shape[0]
         assert D.shape[0] == D.shape[1], "D must be a squared matrix"
         problem = Problem(n_nodes, D)
         self.do(problem)
+        self.tour.calc_costs(D)
         sol = Solution(self.tour)
         return sol
 
@@ -112,3 +113,15 @@ class CheapestInsertion(SemiGreedy):
         new.next = node.next
         node.next.prev = new
         node.next = new
+
+
+class HistoryGreedy(GreedyCheapestArc):
+
+    history: List[List[int]]
+
+    def __call__(self, D: np.ndarray) -> Solution:
+        sol = super().__call__(D)
+        self.history = []
+        for j in range(len(sol.tour)):
+            self.history.append(sol.tour[:j + 1])
+        return sol

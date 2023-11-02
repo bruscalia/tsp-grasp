@@ -8,11 +8,11 @@ from cython.operator cimport dereference as deref
 
 import numpy as np
 
-from tspgrasp.node cimport Node
-from tspgrasp.problem cimport Problem
-from tspgrasp.tour cimport Tour
-from tspgrasp.random cimport RandomGen
-from tspgrasp.utils cimport cmax, cmin, carg_min, cpop
+from tspgrasp.cython.node cimport Node
+from tspgrasp.cython.problem cimport Problem
+from tspgrasp.cython.tour cimport Tour
+from tspgrasp.cython.random cimport RandomGen
+from tspgrasp.cython.utils cimport cmax, cmin, carg_min, cpop
 
 from tspgrasp.solution import Solution
 
@@ -24,11 +24,12 @@ cdef class CheapestArc:
         self.nodes = []
         self.queue = vector[int]()
 
-    def __call__(self, double[:, :] D):
+    def __call__(self, double[:, :] D) -> Solution:
         cdef int n_nodes = D.shape[0]
         assert D.shape[0] == D.shape[1], "D must be a squared matrix"
         problem = Problem(n_nodes, D)
         self.do(problem)
+        self.tour.calc_costs(D)
         sol = Solution(self.tour)
         return sol
 
@@ -66,27 +67,27 @@ cdef class CheapestArc:
             costs.push_back(cost)
         return costs
 
-    cpdef public void do(self, Problem problem) except *:
+    cpdef void do(self, Problem problem) except *:
         pass
 
 
 cdef class GreedyCheapestArc(CheapestArc):
 
-    cpdef public void do(self, Problem problem) except *:
+    cpdef void do(self, Problem problem) except *:
         cdef:
             int choice, idx, qsize
             vector[double] costs
             Node node
         self.problem = problem
         self.start()
-        qsize = self.queue.size()
+        qsize = <int>self.queue.size()
         while qsize > 0:
             costs = self.calc_candidates()
             choice = carg_min(costs)
             idx = cpop(self.queue, choice)
             node = self.nodes[idx]
             self.insert(node)
-            qsize = self.queue.size()
+            qsize = <int>self.queue.size()
 
 
 cdef class SemiGreedy(CheapestArc):
@@ -98,7 +99,7 @@ cdef class SemiGreedy(CheapestArc):
         self.alpha[0] = alpha[0]
         self.alpha[1] = alpha[1]
 
-    cpdef public void do(self, Problem problem) except *:
+    cpdef void do(self, Problem problem) except *:
         cdef:
             int i, idx, choice, qsize
             int *choiceptr
@@ -118,7 +119,7 @@ cdef class SemiGreedy(CheapestArc):
             best = cmin(costs)
             tol = worst - alpha * (worst - best)
             rcl = vector[int]()
-            for i in range(costs.size()):
+            for i in range(<int>costs.size()):
                 if costs[i] <= tol:
                     rcl.push_back(i)
             choiceptr = self.rng.choice(rcl)
@@ -126,7 +127,7 @@ cdef class SemiGreedy(CheapestArc):
             idx = cpop(self.queue, choice)
             node = self.nodes[idx]
             self.insert(node)
-            qsize = self.queue.size()
+            qsize = <int>self.queue.size()
 
 
 cdef double clip(double value, double l, double u) except *:

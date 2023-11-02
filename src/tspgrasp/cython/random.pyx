@@ -40,7 +40,7 @@ cdef mt19937 rng_from_rd() except *:
 
 cdef void shuffle_inplace(vector[int] &v, mt19937 &rng) except *:
     cdef int i, j
-    cdef int n = v.size()
+    cdef int n = <int>v.size()
     cdef uniform_int_distribution[int] dist
 
     for i in range(n-1, 0, -1):
@@ -56,7 +56,7 @@ cdef int* random_choice(vector[int] &v, mt19937 &rng) except *:
         int random_index = dist(rng)
 
     # Check if the vector is empty
-    n = v.size()
+    n = <int>v.size()
     if n == 0:
         return NULL
 

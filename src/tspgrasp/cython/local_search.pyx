@@ -7,10 +7,10 @@ from libcpp.vector cimport vector
 
 import numpy as np
 
-from tspgrasp.node cimport Node
-from tspgrasp.problem cimport Problem
-from tspgrasp.random cimport RandomGen
-from tspgrasp.tour cimport Tour
+from tspgrasp.cython.node cimport Node
+from tspgrasp.cython.problem cimport Problem
+from tspgrasp.cython.random cimport RandomGen
+from tspgrasp.cython.tour cimport Tour
 
 from tspgrasp.solution import Solution
 
@@ -29,37 +29,10 @@ cdef class LocalSearch:
         self._D = np.empty((0, 0), dtype=np.double)[:, :]
         self._correlated_nodes = vector[vector[int]]()
 
-    def __init__(self, seed=None) -> None:
-        """Local Search (VNS) implementation for TSP
-
-        Parameters
-        ----------
-        seed : int, optional
-            Random generator seed, by default None
-        """
-        self._rng = RandomGen(seed)
+    def __init__(self, seed=None):
+        self.rng = RandomGen(seed)
 
     def __call__(self, vector[int] seq, double[:, :] D, max_iter=100000) -> Solution:
-        """Solve a TSP based on an initial solution and a distance matrix
-
-        Parameters
-        ----------
-        seq : List[int]
-            Initial solution
-
-        D : np.ndarray
-            2d-distance matrix
-
-        max_iter : int, optional
-            Max number of moves, by default 100000
-
-        Returns
-        -------
-        Solution
-            Attributes:
-            - tour : List[int]
-            - cost : float
-        """
         assert D.shape[0] == D.shape[1], "D must be a squared matrix"
         assert D.shape[0] == seq.size(), "D must be the same length as seq"
         problem = Problem(seq.size(), D)
@@ -69,7 +42,7 @@ cdef class LocalSearch:
         sol = Solution(self.tour)
         return sol
 
-    def do(self, Tour tour, int max_iter = 100000):
+    def do(LocalSearch self, Tour tour, int max_iter = 100000):
 
         cdef:
             int n_iter = 0
@@ -85,11 +58,11 @@ cdef class LocalSearch:
         while proceed and n_iter < max_iter:
             n_iter = n_iter + 1
             proceed = False or n_iter <= 1
-            self._rng.shuffle(customers)
+            self.rng.shuffle(customers)
             for u_index in customers:
                 u = nodes[u_index]
                 correlated_nodes = self._correlated_nodes[u.index]
-                self._rng.shuffle(correlated_nodes)
+                self.rng.shuffle(correlated_nodes)
                 for v_index in correlated_nodes:
                     v = nodes[v_index]
                     if self.moves(u, v):
@@ -98,7 +71,7 @@ cdef class LocalSearch:
             if not proceed:
                 break
 
-    def set_problem(LocalSearch self, Problem problem):
+    cpdef void set_problem(LocalSearch self, Problem problem) except *:
         self._D = problem.D
 
     cdef void _prepare_search(LocalSearch self, Tour tour) except *:

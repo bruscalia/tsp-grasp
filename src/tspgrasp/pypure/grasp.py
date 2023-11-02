@@ -1,9 +1,9 @@
 import numpy as np
 
 from tspgrasp.base import BaseGrasp
-from tspgrasp.pure_python.constructive import GreedyCheapestArc
-from tspgrasp.pure_python.local_search import LocalSearch
-from tspgrasp.pure_python.problem import Problem
+from tspgrasp.pypure.constructive import GreedyCheapestArc
+from tspgrasp.pypure.local_search import LocalSearch
+from tspgrasp.pypure.problem import Problem
 from tspgrasp.solution import Solution
 
 

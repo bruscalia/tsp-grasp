@@ -35,7 +35,7 @@ cdef int carg_max(vector[double] v):
         int best_pos, i, n
     i = 0
     best_pos = -1
-    n = v.size()
+    n = <int>v.size()
     while i < n:
         if v[i] > best_cost:
             best_cost = v[i]
@@ -50,7 +50,7 @@ cdef int carg_min(vector[double] v):
         int best_pos, i, n
     i = 0
     best_pos = -1
-    n = v.size()
+    n = <int>v.size()
     while i < n:
         if v[i] < best_cost:
             best_cost = v[i]
@@ -64,7 +64,7 @@ cdef int cpop(vector[int] &v, size_t index) except *:
         int n, value
 
     # Check if the position exists and fix
-    n = v.size()
+    n = <int>v.size()
     if index < 0:
         index = 0
     elif index >= n:

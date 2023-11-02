@@ -3,50 +3,23 @@ from typing import List
 
 import numpy as np
 
-from tspgrasp.pure_python.node import Node
-from tspgrasp.pure_python.problem import Problem
+from tspgrasp.pypure.node import Node
+from tspgrasp.pypure.problem import Problem
 from tspgrasp.solution import Solution
-from tspgrasp.pure_python.tour import Tour
+from tspgrasp.pypure.tour import Tour
 
 
 class LocalSearch:
 
     _correlated_nodes: list
 
-    def __init__(self, seed=None) -> None:
-        """Local Search (VNS) implementation for TSP
-
-        Parameters
-        ----------
-        seed : int, optional
-            Random generator seed, by default None
-        """
+    def __init__(self, seed=None):
         self.n_moves = 0
         self._rng = np.random.default_rng(seed)
         self._D = np.empty((0, 0), dtype=np.double)
         self._correlated_nodes = []
 
     def __call__(self, seq: List[int], D: np.ndarray, max_iter=100000):
-        """Solve a TSP based on an initial solution and a distance matrix
-
-        Parameters
-        ----------
-        seq : List[int]
-            Initial solution
-
-        D : np.ndarray
-            2d-distance matrix
-
-        max_iter : int, optional
-            Max number of moves, by default 100000
-
-        Returns
-        -------
-        Solution
-            Attributes:
-            - tour : List[int]
-            - cost : float
-        """
         assert D.shape[0] == D.shape[1], "D must be a squared matrix"
         assert D.shape[0] == len(seq), "D must be the same length as seq"
         problem = Problem(len(seq), D)
@@ -60,6 +33,8 @@ class LocalSearch:
         self._prepare_search(tour)
         nodes = sorted(self.tour.nodes, key=lambda x: x.index)
         customers = [n.index for n in nodes if not n.is_depot]
+        n_iter = 0
+        proceed = True
         while proceed and n_iter < max_iter:
             n_iter = n_iter + 1
             proceed = False or n_iter <= 1
@@ -372,3 +347,16 @@ class LocalSearch:
                     corr_sets[i].add(j)
                     corr_sets[j].add(i)
         self._correlated_nodes = [list(corr_sets[i]) for i in range(n_nodes)]
+
+
+class HistoryLS(LocalSearch):
+
+    history: List[List[int]]
+
+    def __call__(self, seq: List[int], D: np.ndarray, max_iter=100000):
+        self.history = []
+        return super().__call__(seq, D, max_iter)
+
+    def moves(self, u: Node, v: Node) -> bool:
+        if super().moves(u, v):
+            self.history.append(self.tour.solution)

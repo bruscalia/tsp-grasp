@@ -1,14 +1,14 @@
 import numpy as np
-from tspgrasp.pure_python.node import Node
+from tspgrasp.pypure.node import Node
 
-from tspgrasp.pure_python.problem import Problem
-from tspgrasp.pure_python.tour import Tour
-from tspgrasp.pure_python.local_search import LocalSearch
+from tspgrasp.pypure.problem import Problem
+from tspgrasp.pypure.tour import Tour
+from tspgrasp.pypure.local_search import LocalSearch
 
 
 class SimulatedAnnealing(LocalSearch):
 
-    def __init__(self, T_start=10, T_final=1e-3, decay=0.99, seed=None):
+    def __init__(self, T_start=10.0, T_final=1e-3, decay=0.99, seed=None):
         super().__init__(seed)
         self.T_start = T_start
         self.T_final = T_final

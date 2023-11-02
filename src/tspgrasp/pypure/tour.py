@@ -1,17 +1,16 @@
-# distutils: language = c++
-# cython: language_level=3, boundscheck=False, wraparound=False, cdivision=True, embedsignature=True, initializedcheck=False
-
-from libcpp cimport bool
-from libcpp.vector cimport vector
-
 import copy
+from typing import List
 
-from tspgrasp.node cimport Node
+import numpy as np
+
+from tspgrasp.pypure.node import Node
 
 
-cdef class Tour:
+class Tour:
 
-    def __init__(self, Node depot) -> None:
+    depot: Node
+
+    def __init__(self, depot: Node) -> None:
         depot.next = depot
         depot.prev = depot
         depot.is_depot = True
@@ -21,13 +20,8 @@ cdef class Tour:
         return str(self.solution)
 
     @classmethod
-    def new(cls, vector[int] seq):
-        cdef:
-            Node node
-            Tour tour
-            int i
-        i = seq.front()
-        seq.erase(seq.begin())
+    def new(cls, seq: List[int]):
+        i = seq.pop(0)
         node = Node(i, is_depot=True)
         tour = cls(node)
         for i in seq:
@@ -36,7 +30,7 @@ cdef class Tour:
         return tour
 
     @property
-    def solution(self):
+    def solution(self) -> List[int]:
         sol = []
         first_it = True
         node = self.depot
@@ -48,7 +42,7 @@ cdef class Tour:
         return sol
 
     @property
-    def nodes(self):
+    def nodes(self) -> List[Node]:
         sol = []
         first_it = True
         node = self.depot
@@ -65,19 +59,18 @@ cdef class Tour:
     def cost(self):
         return self.depot.cum_dist
 
-    cdef public void insert(Tour self, Node new) except *:
+    def insert(self, new: Node):
         new.prev = self.depot.prev
         self.depot.prev.next = new
         new.next = self.depot
         self.depot.prev = new
 
-    cdef public void calc_costs(Tour self, double[:, :] D) except *:
+    def calc_costs(self, D: np.ndarray):
 
-        cdef:
-            bool first_it = True
-            Node node = self.depot
-            double dist = 0.0
-            double rdist = 0.0
+        first_it = True
+        node = self.depot
+        dist = 0.0
+        rdist = 0.0
 
         node.cum_dist = dist
         node.cum_rdist = rdist

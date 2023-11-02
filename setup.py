@@ -16,7 +16,7 @@ base_kwargs = dict(
     name = 'tspgrasp',
     package_dir={'': "src"},
     packages = find_packages(where='src'),
-    version = '0.1.0.dev5',
+    version = '0.1.0.rc1',
     license='Apache License 2.0',
     description = 'GRASP for TSP',
     long_description_content_type="text/markdown",
@@ -83,6 +83,8 @@ def construct_build_ext(build_ext):
 # ---------------------------------------------------------------------------------------------------------
 
 ROOT = os.path.dirname(os.path.realpath(__file__))
+CY_PATH = os.path.join(ROOT, "src", "tspgrasp", "cython")
+PYX_FILES = [os.path.join(CY_PATH, f) for f in os.listdir(CY_PATH) if f.endswith(".pyx")]
 
 if params.nopyx:
     ext_modules = []
@@ -90,13 +92,11 @@ if params.nopyx:
 else:
     try:
         if params.nocython:
-            path = os.path.join(ROOT, "src", "tspgrasp")
-            pyx = [os.path.join(path, f) for f in os.listdir() if f.endswith(".pyx")]
-            ext_modules = [Extension(f"tspgrasp.{source[:-4]}", [source]) for source in pyx]
+            ext_modules = [Extension(f"tspgrasp.{source[:-4]}", [source]) for source in PYX_FILES]
         else:
             try:
                 from Cython.Build import cythonize
-                ext_modules = cythonize("src/tspgrasp/*.pyx")
+                ext_modules = cythonize(PYX_FILES)
             except ImportError:
                 print('*' * 75)
                 print("No Cython package found to convert .pyx files.")

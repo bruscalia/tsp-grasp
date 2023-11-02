@@ -24,20 +24,22 @@ class BaseGrasp:
 
     @abstractmethod
     def __init__(self, constructive=None, local_search=None, seed=None):
-        """GRASP for general TSP
+        """Greedy Randomized Adaptive Search Procedure for the TSP.
 
         Parameters
         ----------
         constructive : Any, optional
-            Adaptive constructive heuristic - see `grasp.constructive`,
-            by default None, which uses `GreedyCheapestArc`
+            Greedy constructive heuristic. Current options available are `GreedyCheapestArc`
+            and `SemiGreedy`, which should be instantiated beforehand.
+            By default None, which instantiates a `GreedyCheapestArc` operator.
 
         local_search : Any, optional
-            Local search heuristic - see `grasp.local_search`,
-            by default None, which uses `LocalSearch`
+            Local search heuristic. Current options available are `LocalSearch`
+            and `SimulatedAnnealing`, which should be instantiated beforehand.
+            By default None, which uses `LocalSearch`, a VNS with first improvement
 
         seed : int, optional
-            Numpy generator random seed, by default None
+            Random generator seed (differs behavior from cython to python), by default None
         """
         pass
 
@@ -76,8 +78,8 @@ class BaseGrasp:
         Returns
         -------
         Solution
-            Results with properties:
-            - tour : List[int] (depot is included twice)
+            Attributes:
+            - tour : List[int]
             - cost : float
         """
         pass
@@ -92,35 +94,6 @@ class BaseGrasp:
         target: float = -float("inf"),
         verbose: bool = False
     ) -> Solution:
-        """Solves a TSP based on a generic 2-dimensional distances matrix
-
-        Parameters
-        ----------
-        problem : Problem
-            Instance with attributes `n_nodes` and `D`, a 2-dimensional distances matrix
-
-        max_iter : int
-            Maximum number of complete iterations, by default 10000
-
-        max_moves : int
-            Maximum number of local search moves, by default 100000
-
-        time_limit : float, optional
-            Time limit to interrupt the solution, by default float("inf")
-
-        target : float, optional
-            Taget value for objective which interrupts optimization process, by default -float("inf")
-
-        verbose : bool, optional
-            Either or not to print messages during solution
-
-        Returns
-        -------
-        Solution
-            Results with properties:
-            - tour : List[int] (depot is included twice)
-            - cost : float
-        """
         # Set problem on local search
         self.local_search.set_problem(problem)
 

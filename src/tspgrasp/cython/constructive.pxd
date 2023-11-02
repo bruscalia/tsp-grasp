@@ -4,11 +4,11 @@
 from libcpp cimport bool
 from libcpp.vector cimport vector
 
-from tspgrasp.node cimport Node
-from tspgrasp.problem cimport Problem
-from tspgrasp.tour cimport Tour
-from tspgrasp.random cimport RandomGen
-from tspgrasp.utils cimport cmax, cmin, carg_min, cpop
+from tspgrasp.cython.node cimport Node
+from tspgrasp.cython.problem cimport Problem
+from tspgrasp.cython.tour cimport Tour
+from tspgrasp.cython.random cimport RandomGen
+from tspgrasp.cython.utils cimport cmax, cmin, carg_min, cpop
 
 
 cdef class CheapestArc:
@@ -20,7 +20,7 @@ cdef class CheapestArc:
         vector[int] queue
         RandomGen rng
 
-    cpdef public void do(self, Problem problem) except *
+    cpdef void do(self, Problem problem) except *
     cdef double calc_insertion(CheapestArc self, Node new) except *
     cdef void insert(CheapestArc self, Node new) except *
     cdef void start(CheapestArc self) except *

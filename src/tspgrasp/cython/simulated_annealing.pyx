@@ -9,15 +9,15 @@ from libcpp.vector cimport vector
 
 import numpy as np
 
-from tspgrasp.local_search cimport LocalSearch
-from tspgrasp.node cimport Node
-from tspgrasp.problem import Problem
-from tspgrasp.tour cimport Tour
+from tspgrasp.cython.local_search cimport LocalSearch
+from tspgrasp.cython.node cimport Node
+from tspgrasp.cython.problem cimport Problem
+from tspgrasp.cython.tour cimport Tour
 
 
 cdef class SimulatedAnnealing(LocalSearch):
 
-    def __init__(self, T_start=10, T_final=1e-3, decay=0.99, seed=None):
+    def __init__(self, T_start=10.0, T_final=1e-3, decay=0.99, seed=None):
         super().__init__(seed)
         self.T_start = T_start
         self.T_final = T_final
@@ -40,11 +40,11 @@ cdef class SimulatedAnnealing(LocalSearch):
         while proceed and n_iter < max_iter and self.T >= self.T_final:
             n_iter = n_iter + 1
             proceed = False or n_iter <= 1
-            self._rng.shuffle(customers)
+            self.rng.shuffle(customers)
             for u_index in customers:
                 u = nodes[u_index]
                 correlated_nodes = self._correlated_nodes[u.index]
-                self._rng.shuffle(correlated_nodes)
+                self.rng.shuffle(correlated_nodes)
                 for v_index in correlated_nodes:
                     v = nodes[v_index]
                     if self.moves(u, v):
@@ -63,5 +63,5 @@ cdef class SimulatedAnnealing(LocalSearch):
     cdef bool eval_move(SimulatedAnnealing self, double cost) except *:
         cdef:
             bool make_move
-        make_move = (cost <= -0.0001) or (exp(-(cost + self.T_final)/self.T) > self._rng.rand())
+        make_move = (cost <= -0.0001) or (exp(-(cost + self.T_final)/self.T) > self.rng.rand())
         return not make_move
