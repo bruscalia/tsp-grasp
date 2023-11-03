@@ -16,7 +16,7 @@ base_kwargs = dict(
     name = 'tspgrasp',
     package_dir={'': "src"},
     packages = find_packages(where='src'),
-    version = '0.1.0.rc2',
+    version = '0.1.0.rc3',
     license='Apache License 2.0',
     description = 'GRASP for TSP',
     long_description_content_type="text/markdown",
