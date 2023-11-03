@@ -12,6 +12,9 @@ from setuptools.command.build_ext import build_ext
 
 BASE_PACKAGE = "tspgrasp"
 
+with open("README.md", "r", encoding="utf-8") as fh:
+    long_description = fh.read()
+
 base_kwargs = dict(
     name = 'tspgrasp',
     package_dir={'': "src"},
@@ -19,10 +22,24 @@ base_kwargs = dict(
     version = '0.1.0',
     license='Apache License 2.0',
     description = 'GRASP for TSP',
+    long_description=long_description,
     long_description_content_type="text/markdown",
     author = 'Bruno Scalia C. F. Leite',
     author_email = 'bruscalia12@gmail.com',
-    keywords = [],
+    url = 'https://github.com/bruscalia/tsp-grasp',
+    download_url = 'https://github.com/bruscalia/tsp-grasp',
+    keywords = [
+            'Traveling Salesman Problem',
+            'TSP',
+            'Greedy Randomized Adaptive Search Procedures',
+            'Heuristics',
+            'Metaheuristics',
+            'Meta-heuristics',
+            'Greedy Algorithms',
+            'Local Search',
+            'Variable Neighborhood Search',
+            'Simulated Annealing',
+        ],
     install_requires=["numpy>=1.19", "Cython"],
     extras_require={
         "dev": ["pytest"],  # for developers
