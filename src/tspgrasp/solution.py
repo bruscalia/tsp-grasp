@@ -22,3 +22,6 @@ class Solution:
         self._tour = tour
         self.tour = tour.solution
         self.cost = tour.cost
+
+    def __repr__(self) -> str:
+        return f"Cost: {self.cost}\nTour: {self.tour}"

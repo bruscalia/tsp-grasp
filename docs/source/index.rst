@@ -8,7 +8,9 @@ tspgrasp
 
 Welcome to `tspgrasp`! A Python package with Heuristics for solving the Traveling Salesman Problem (TSP).
 
-You can find :doc:`API details <api>` here. And a simple coding example :ref:`below <use>` .
+* :doc:`API details <api>`
+* :ref:`Simple coding example <use>`
+* :doc:`Detailed examples <Examples>`
 
 .. image:: _static/grasp.gif
     :alt: header
@@ -20,7 +22,13 @@ You can find :doc:`API details <api>` here. And a simple coding example :ref:`be
 Install
 -------
 
-To install the package, clone it from github using `git clone https://github.com/bruscalia/tsp-grasp.git` and run `pip install .` or `python setup.py install` in the repository root folder. Make sure Cython and numpy are also available in your python environment.
+The package `tspgrasp` is available on PyPI, so you can install it via `pip` by running the following command line:
+
+.. code:: bash
+
+   pip install tspgrasp
+
+To install the package in development versions, clone it from github using `git clone https://github.com/bruscalia/tsp-grasp.git` and run `pip install .` or `python setup.py install` in the repository root folder. Make sure Cython and numpy are also available in your python environment.
 
 Alternatively, you can directly run:
 
@@ -63,6 +71,13 @@ Use
    :hidden:
 
    api
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Use:
+   :hidden:
+
+   Examples.ipynb
 
 
 Theory
