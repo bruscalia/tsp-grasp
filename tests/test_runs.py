@@ -27,13 +27,13 @@ def test_repeated_results():
 
 def test_ls():
     ls = LocalSearch(seed=12)
-    sol = ls(list(range(100)), D)
+    sol = ls(list(range(D.shape[0])), D)
     assert sol is not None, "Local Search failed"
 
 
 def test_sa():
     ls = SimulatedAnnealing(T_start=0.1, T_final=1e-4, decay=0.99, seed=12)
-    sol = ls(list(range(100)), D)
+    sol = ls(list(range(D.shape[0])), D)
     assert sol is not None, "Simulated Annealing failed"
 
 
@@ -76,7 +76,7 @@ def test_different_results(alpha):
 
 def test_ls_vs_sa():
     sa = SimulatedAnnealing(T_start=0.1, T_final=1e-4, decay=0.99, seed=12)
-    sol1 = sa(list(range(100)), D)
+    sol1 = sa(list(range(D.shape[0])), D)
     ls = SimulatedAnnealing(T_start=0.1, T_final=1e-4, decay=0.99, seed=12)
-    sol2 = ls(list(range(100)), D)
+    sol2 = ls(list(range(D.shape[0])), D)
     assert sol1.cost != sol2.cost, "LS and SA are the same!"
