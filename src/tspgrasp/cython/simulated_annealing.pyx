@@ -63,5 +63,5 @@ cdef class SimulatedAnnealing(LocalSearch):
     cdef bool eval_move(SimulatedAnnealing self, double cost) except *:
         cdef:
             bool make_move
-        make_move = (cost <= -0.0001) or (exp(-(cost + self.T_final)/self.T) > self.rng.rand())
+        make_move = (cost <= -0.0001) or (exp(-(cost + self.T_final)/self.T) > self.rng.random())
         return not make_move

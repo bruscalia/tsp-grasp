@@ -11,5 +11,5 @@ cdef class RandomGen:
         mt19937 _rng
 
     cdef void shuffle(RandomGen self, vector[int] &v) except *
-    cdef double rand(RandomGen self) except *
+    cdef double random(RandomGen self) except *
     cdef int* choice(RandomGen self, vector[int] &v) except *

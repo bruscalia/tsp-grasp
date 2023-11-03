@@ -13,7 +13,7 @@ cdef class RandomGen:
     cdef void shuffle(RandomGen self, vector[int] &v) except *:
         shuffle_inplace(v, self._rng)
 
-    cdef double rand(RandomGen self) except *:
+    cdef double random(RandomGen self) except *:
         return random_value(self._rng)
 
     cdef int* choice(RandomGen self, vector[int] &v) except *:
