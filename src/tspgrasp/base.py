@@ -54,12 +54,12 @@ class BaseGrasp:
         target: float = -float("inf"),
         verbose: bool = False
     ) -> Solution:
-        """Solves a TSP based on a generic 2-dimensional distances matrix
+        """Solves a TSP based on a generic 2-dimensional distance matrix
 
         Parameters
         ----------
         D : np.ndarray
-            2-dimensional distances matrix
+            2-dimensional distance matrix
 
         max_iter : int
             Maximum number of complete iterations, by default 10000

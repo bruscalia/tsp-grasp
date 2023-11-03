@@ -37,7 +37,7 @@ Alternatively, you can directly run:
    pip install git+https://github.com/bruscalia/tsp-grasp.git
 
 
-Here is a minimum working example in which a symmetric distances matrix is produced from 2-dimensional coordinates.
+Here is a minimum working example in which a symmetric distance matrix is produced from 2-dimensional coordinates.
 
 
 .. _use:
@@ -52,7 +52,7 @@ Use
    from scipy.spatial.distance import pdist, squareform
    from tspgrasp import Grasp
 
-   # Create distances matrix
+   # Create distance matrix
    X = np.random.random((100, 2))
    D = squareform(pdist(X))
 
@@ -85,7 +85,7 @@ Theory
 
 Greedy Randomized Adaptive Search Procedures (GRASP) are metaheuristics constituted by a hybridization of a semi-greedy procedure with a local search method. For more details please refer to Resende & Ribeiro (2016).
 
-Local search moves implemented were based on the work of Vidal et al. (2022).
+Local search moves implemented were based on the work of Vidal (2022).
 
 
 Contact

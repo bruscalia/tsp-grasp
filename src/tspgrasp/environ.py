@@ -35,7 +35,7 @@ class GreedyCheapestArc(tspconstr.GreedyCheapestArc):
         super().__init__(seed)
 
     def __call__(self, D: np.ndarray) -> Solution:
-        """Solves a TSP based on a pairwise distances matrix.
+        """Solves a TSP based on a pairwise distance matrix.
 
         Parameters
         ----------
@@ -69,7 +69,7 @@ class SemiGreedy(tspconstr.SemiGreedy):
         super().__init__(alpha=alpha, seed=seed)
 
     def __call__(self, D: np.ndarray) -> Solution:
-        """Solves a TSP based on a pairwise distances matrix.
+        """Solves a TSP based on a pairwise distance matrix.
 
         Parameters
         ----------

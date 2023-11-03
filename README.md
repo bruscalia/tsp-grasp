@@ -22,7 +22,7 @@ To install the package in development versions, clone it from github using:
 git clone https://github.com/bruscalia/tsp-grasp.git
 ```
 
-And run of the two following commands:
+And run one of the two following commands:
 
 ```
 pip install .
@@ -32,7 +32,7 @@ pip install .
 python setup.py install
 ```
 
-in the repository root folder. Make sure Cython and numpy are also available in your python environment.
+Make sure Cython and numpy are also available in your python environment.
 
 Alternatively, you can directly run:
 
@@ -40,7 +40,7 @@ Alternatively, you can directly run:
 pip install git+https://github.com/bruscalia/tsp-grasp.git
 ```
 
-Here is a minimum working example in which a symmetric distances matrix is produced from 2-dimensional coordinates.
+Here is a minimum working example in which a symmetric distance matrix is produced from 2-dimensional coordinates.
 
 ## Use
 
@@ -52,7 +52,7 @@ from tspgrasp import Grasp
 ```
 
 ```python
-# Create distances matrix
+# Create distance matrix
 X = np.random.random((100, 2))
 D = squareform(pdist(X))
 
@@ -69,7 +69,7 @@ print(f"Tour: {sol.tour}")
 
 Greedy Randomized Adaptive Search Procedures (GRASP) are metaheuristics constituted by a hybridization of a semi-greedy procedure with a local search method. For more details please refer to Resende & Ribeiro (2016).
 
-Local search moves implemented were based on the work of Vidal et al. (2022).
+Local search moves implemented were based on the work of Vidal (2022).
 
 
 ## Contact
