@@ -112,7 +112,7 @@ cdef class SemiGreedy(CheapestArc):
         self.start()
         qsize = <int>self.queue.size()
         alpha = self.alpha[0] + self.rng.random() * (self.alpha[1] - self.alpha[0])
-        alpha = clip(alpha, 0.0, 1.0)
+        alpha = clip(alpha, 0.000001, 0.9999)
         while qsize > 0:
             costs = self.calc_candidates()
             worst = cmax(costs)

@@ -32,4 +32,4 @@ jobs:
           python -c "from tspgrasp import cythonized;print('Compiled Extensions: ', cythonized)"
       - name: Run Tests
         run: |
-          pytest -v --maxfail 1 --no-header -m "not long"
+          pytest -v --no-header -m "not long"

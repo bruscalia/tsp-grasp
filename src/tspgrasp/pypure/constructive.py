@@ -81,7 +81,8 @@ class SemiGreedy(CheapestArc):
     def do(self, problem: Problem):
         self.problem = problem
         self.start()
-        alpha = self.alpha[0] + self.rng.random() * (self.alpha[1] - self.alpha[0]) - 1e-6
+        alpha = self.alpha[0] + self.rng.random() * (self.alpha[1] - self.alpha[0])
+        alpha = np.clip(alpha, 0.000001, 0.99999)
         while len(self.queue) > 0:
             costs = self.calc_candidates()
             worst = max(costs)

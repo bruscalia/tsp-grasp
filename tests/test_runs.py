@@ -77,6 +77,6 @@ def test_different_results(alpha):
 def test_ls_vs_sa():
     sa = SimulatedAnnealing(T_start=0.1, T_final=1e-4, decay=0.99, seed=12)
     sol1 = sa(list(range(D.shape[0])), D)
-    ls = SimulatedAnnealing(T_start=0.1, T_final=1e-4, decay=0.99, seed=12)
+    ls = LocalSearch(seed=12)
     sol2 = ls(list(range(D.shape[0])), D)
     assert sol1.cost != sol2.cost, "LS and SA are the same!"
