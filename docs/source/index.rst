@@ -28,7 +28,15 @@ The package `tspgrasp` is available on PyPI, so you can install it via `pip` by 
 
    pip install tspgrasp
 
-To install the package in development versions, clone it from github using `git clone https://github.com/bruscalia/tsp-grasp.git` and run `pip install .` or `python setup.py install` in the repository root folder. Make sure Cython and numpy are also available in your python environment.
+To install the package in development versions, clone it from github using
+
+.. code:: bash
+
+   git clone https://github.com/bruscalia/tsp-grasp.git
+
+And executing ``pip install .`` or ``python setup.py install`` in the cloned repository root folder.
+
+Make sure Cython and numpy are also available in your python environment.
 
 Alternatively, you can directly run:
 

@@ -26,6 +26,13 @@ Constructive Heuristics
 .. autoclass:: tspgrasp.environ.SemiGreedyArc
 
 
+.. autoclass:: tspgrasp.environ.CheapestInsertion
+
+.. autoclass:: tspgrasp.environ.RandomInsertion
+
+.. autoclass:: tspgrasp.environ.SemiGreedyInsertion
+
+
 Local Search
 ------------
 

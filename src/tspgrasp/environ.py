@@ -54,7 +54,9 @@ class CheapestArc(tspconstr.CheapestArc):
 class SemiGreedyArc(tspconstr.SemiGreedyArc):
 
     def __init__(self, alpha=(0.0, 1.0), seed=None):
-        """Greedy-randomized constructive heuristic for the TSP.
+        """Greedy-randomized constructive heuristic for the TSP. It inserts the next node
+        at the end of the partial tour.
+        Depot nodes are randomly chosen.
 
         Parameters
         ----------
@@ -89,6 +91,38 @@ class CheapestInsertion(tspconstr.CheapestInsertion):
 
     def __init__(self, seed=None):
         """Greedy adaptive construction for the TSP inserting the next node at the best position
+        between two existing nodes of the partial tour.
+        Depot nodes are randomly chosen.
+
+        Parameters
+        ----------
+        seed : int, optional
+            Random generator seed (differs behavior from cython to python), by default None
+        """
+        super().__init__(seed)
+
+    def __call__(self, D: np.ndarray) -> Solution:
+        """Solves a TSP based on a pairwise distance matrix.
+
+        Parameters
+        ----------
+        D : np.ndarray
+            2-dimensional distance matrix
+
+        Returns
+        -------
+        Solution
+            Attributes:
+            - tour : List[int]
+            - cost : float
+        """
+        return super().__call__(D)
+
+
+class RandomInsertion(tspconstr.RandomInsertion):
+
+    def __init__(self, seed=None):
+        """Constructive heuristic for the TSP inserting a random next node at the best position
         between two existing nodes of the partial tour.
         Depot nodes are randomly chosen.
 

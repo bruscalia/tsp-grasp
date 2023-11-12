@@ -31,7 +31,7 @@ class BaseGrasp:
         ----------
         constructive : Any, optional
             Constructive heuristic. Current options available are `CheapestArc`,
-            `SemiGreedyArc`, `CheapestInsertion`, and `SemiGreedyInsertion`,
+            `SemiGreedyArc`, `CheapestInsertion`, `RandomInsertion`, and `SemiGreedyInsertion`,
             which should be instantiated beforehand.
             By default None, which instantiates a `CheapestArc` operator.
 

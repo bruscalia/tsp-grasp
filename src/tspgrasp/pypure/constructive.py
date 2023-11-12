@@ -117,6 +117,19 @@ class CheapestInsertion(CheapestArc):
         node.next = new
 
 
+class RandomInsertion(CheapestInsertion):
+
+    def do(self, problem: Problem):
+        self.problem = problem
+        self.start()
+        while len(self.queue) > 0:
+            choice = np.random.choice(len(self.queue))
+            nd = self.queue.pop(choice)
+            self.calc_insertion(nd)
+            self.insert(nd)
+        return self.tour.cost
+
+
 class SemiGreedyInsertion(CheapestInsertion, SemiGreedyArc):
 
     def __init__(self, alpha=(0, 1), seed=None):

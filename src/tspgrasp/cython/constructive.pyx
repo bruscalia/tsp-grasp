@@ -6,6 +6,8 @@ from libcpp.vector cimport vector
 
 from cython.operator cimport dereference as deref
 
+from typing import List
+
 import numpy as np
 
 from tspgrasp.cython.node cimport Node
@@ -165,6 +167,27 @@ cdef class CheapestInsertion(CheapestArc):
         node.next = new
 
 
+cdef class RandomInsertion(CheapestInsertion):
+
+    cpdef void do(self, Problem problem) except *:
+        cdef:
+            int choice, idx, qsize
+            int *choiceptr
+            vector[double] costs
+            Node node
+        self.problem = problem
+        self.start()
+        qsize = <int>self.queue.size()
+        while qsize > 0:
+            choiceptr = self.rng.choice(range_idx(self.queue))
+            choice = deref(choiceptr)
+            idx = cpop(self.queue, choice)
+            node = self.nodes[idx]
+            self.calc_insertion(node)
+            self.insert(node)
+            qsize = <int>self.queue.size()
+
+
 cdef class SemiGreedyInsertion(SemiGreedyArc):
 
     cdef double calc_insertion(SemiGreedyInsertion self, Node new) except *:
@@ -202,3 +225,18 @@ cdef double clip(double value, double l, double u) except *:
     elif value >= u:
         value = u
     return value
+
+
+def python_range_idx(v: List[int]):
+    return range_idx(v)
+
+
+cdef vector[int] range_idx(vector[int] v) except *:
+    cdef:
+        int i = 0
+        vector[int] out
+    out = vector[int]()
+    while i < v.size():
+        out.push_back(i)
+        i = i + 1
+    return out

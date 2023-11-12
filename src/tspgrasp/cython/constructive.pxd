@@ -43,7 +43,17 @@ cdef class CheapestInsertion(CheapestArc):
     cdef void insert(CheapestInsertion self, Node new) except *
 
 
+cdef class RandomInsertion(CheapestInsertion):
+    pass
+
+
 cdef class SemiGreedyInsertion(SemiGreedyArc):
 
     cdef double calc_insertion(SemiGreedyInsertion self, Node new) except *
     cdef void insert(SemiGreedyInsertion self, Node new) except *
+
+
+cdef double clip(double value, double l, double u) except *
+
+
+cdef vector[int] range_idx(vector[int] v) except *

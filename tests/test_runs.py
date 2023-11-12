@@ -4,8 +4,8 @@ import pytest
 import numpy as np
 from scipy.spatial.distance import pdist, squareform
 from tspgrasp import (
-    Grasp, CheapestArc, SemiGreedyArc, CheapestInsertion, SemiGreedyInsertion,
-    LocalSearch, SimulatedAnnealing,
+    Grasp, CheapestArc, SemiGreedyArc, CheapestInsertion, RandomInsertion,
+    SemiGreedyInsertion, LocalSearch, SimulatedAnnealing,
 )
 
 
@@ -44,6 +44,13 @@ def test_greedy():
     greedy = CheapestArc(seed=12)
     sol = greedy(D)
     assert sol is not None, "Greedy failed"
+
+
+@pytest.mark.parametrize('constructive', [CheapestInsertion, RandomInsertion])
+def test_insertion(constructive):
+    greedy = constructive(seed=12)
+    sol = greedy(D)
+    assert sol is not None, "Semi-greedy failed"
 
 
 @pytest.mark.parametrize('constructive', [SemiGreedyInsertion, SemiGreedyArc])
