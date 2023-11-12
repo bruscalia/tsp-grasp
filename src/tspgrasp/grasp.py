@@ -4,7 +4,7 @@ import numpy as np
 
 from tspgrasp.base import BaseGrasp
 from tspgrasp.cython.problem import Problem
-from tspgrasp.cython.constructive import GreedyCheapestArc
+from tspgrasp.cython.constructive import CheapestArc
 from tspgrasp.cython.local_search import LocalSearch
 from tspgrasp.solution import Solution
 
@@ -16,23 +16,10 @@ MAX_ITER = 10000
 class Grasp(BaseGrasp):
 
     def __init__(self, constructive=None, local_search=None, seed=None):
-        """Greedy Randomized Adaptive Search Procedure for the TSP
-
-        Parameters
-        ----------
-        constructive : Any, optional
-            Greedy constructive heuristic, by default None, which uses `GreedyCheapestArc`
-
-        local_search : Any, optional
-            Local search heuristic, by default None, which uses `LocalSearch` a VNS
-
-        seed : int, optional
-            Random generator seed (differs behavior from cython to python), by default None
-        """
         self.seed = seed
         self.costs = []
         if constructive is None:
-            constructive = GreedyCheapestArc(seed=seed)
+            constructive = CheapestArc(seed=seed)
         if local_search is None:
             local_search = LocalSearch(seed=seed)
         self.constructive = constructive

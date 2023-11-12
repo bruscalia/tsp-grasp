@@ -3,7 +3,10 @@ import pytest
 # Imports
 import numpy as np
 from scipy.spatial.distance import pdist, squareform
-from tspgrasp import Grasp, GreedyCheapestArc, SemiGreedy, LocalSearch, SimulatedAnnealing
+from tspgrasp import (
+    Grasp, CheapestArc, SemiGreedyArc, CheapestInsertion, SemiGreedyInsertion,
+    LocalSearch, SimulatedAnnealing,
+)
 
 
 np.random.seed(12)
@@ -38,21 +41,23 @@ def test_sa():
 
 
 def test_greedy():
-    greedy = GreedyCheapestArc(seed=12)
+    greedy = CheapestArc(seed=12)
     sol = greedy(D)
     assert sol is not None, "Greedy failed"
 
 
+@pytest.mark.parametrize('constructive', [SemiGreedyInsertion, SemiGreedyArc])
 @pytest.mark.parametrize('alpha', [0.0, 0.5, 1.0, (0.0, 1.0), (0.5, 0.9)])
-def test_semigreedy(alpha):
-    greedy = SemiGreedy(alpha=alpha, seed=12)
+def test_semigreedy(constructive, alpha):
+    greedy = constructive(alpha=alpha, seed=12)
     sol = greedy(D)
     assert sol is not None, "Semi-greedy failed"
 
 
+@pytest.mark.parametrize('constructive', [SemiGreedyInsertion, SemiGreedyArc])
 @pytest.mark.parametrize('alpha', [0.0, 0.5, 1.0, (0.0, 1.0), (0.5, 0.9)])
-def test_grasp_with_semi(alpha):
-    greedy = SemiGreedy(alpha=alpha, seed=12)
+def test_grasp_with_semi(constructive, alpha):
+    greedy = constructive(alpha=alpha, seed=12)
     grasp = Grasp(constructive=greedy, seed=12)
     sol = grasp(D, max_iter=3)
     assert sol is not None, "Grasp with Semi-greedy failed"
@@ -67,11 +72,11 @@ def test_grasp_with_sa():
 
 @pytest.mark.parametrize('alpha', [0.0, 0.5, (0.5, 0.9)])
 def test_different_results(alpha):
-    greedy = GreedyCheapestArc(seed=12)
+    greedy = CheapestArc(seed=12)
     sol1 = greedy(D)
-    sgreedy = SemiGreedy(alpha=alpha, seed=12)
+    sgreedy = SemiGreedyArc(alpha=alpha, seed=12)
     sol2 = sgreedy(D)
-    assert sol1.cost != sol2.cost, "Greedy and SemiGreedy are the same!"
+    assert sol1.cost != sol2.cost, "Greedy and SemiGreedyArc are the same!"
 
 
 def test_ls_vs_sa():

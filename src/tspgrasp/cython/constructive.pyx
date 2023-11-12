@@ -17,7 +17,11 @@ from tspgrasp.cython.utils cimport cmax, cmin, carg_min, cpop
 from tspgrasp.solution import Solution
 
 
-cdef class CheapestArc:
+cdef extern from "math.h":
+    double HUGE_VAL
+
+
+cdef class Constructive:
 
     def __init__(self, seed=None):
         self.rng = RandomGen(seed)
@@ -33,13 +37,13 @@ cdef class CheapestArc:
         sol = Solution(self.tour)
         return sol
 
-    cdef double calc_insertion(CheapestArc self, Node new) except *:
+    cdef double calc_insertion(Constructive self, Node new) except *:
         return self.problem.D[self.tour.depot.prev.index, new.index]
 
-    cdef void insert(CheapestArc self, Node new) except *:
+    cdef void insert(Constructive self, Node new) except *:
         self.tour.insert(new)
 
-    cdef void start(CheapestArc self) except *:
+    cdef void start(Constructive self) except *:
         cdef:
             Node node
             int *firstptr
@@ -54,7 +58,7 @@ cdef class CheapestArc:
         node = self.nodes[idx]
         self.tour = Tour(node)
 
-    cdef vector[double] calc_candidates(CheapestArc self) except *:
+    cdef vector[double] calc_candidates(Constructive self) except *:
         cdef:
             Node node
             vector[double] costs
@@ -71,7 +75,7 @@ cdef class CheapestArc:
         pass
 
 
-cdef class GreedyCheapestArc(CheapestArc):
+cdef class CheapestArc(Constructive):
 
     cpdef void do(self, Problem problem) except *:
         cdef:
@@ -90,7 +94,7 @@ cdef class GreedyCheapestArc(CheapestArc):
             qsize = <int>self.queue.size()
 
 
-cdef class SemiGreedy(CheapestArc):
+cdef class SemiGreedyArc(CheapestArc):
 
     def __init__(self, alpha=(0.0, 1.0), seed=None):
         super().__init__(seed)
@@ -128,6 +132,68 @@ cdef class SemiGreedy(CheapestArc):
             node = self.nodes[idx]
             self.insert(node)
             qsize = <int>self.queue.size()
+
+
+cdef class CheapestInsertion(CheapestArc):
+
+    cdef double calc_insertion(CheapestInsertion self, Node new) except *:
+        cdef:
+            double cost, cfrom, cnext, cbase, c
+            Node node
+            bool first_iter
+        cost = HUGE_VAL
+        node = self.tour.depot
+        first_iter = True
+        while not node.is_depot or first_iter:
+            cfrom = self.problem.D[node.index, new.index]
+            cnext = self.problem.D[new.index, node.next.index]
+            cbase = self.problem.D[node.index, node.next.index]
+            c = cfrom + cnext - cbase
+            if c < cost:
+                new.prev = node
+                cost = c
+            node = node.next
+            first_iter = False
+        return cost
+
+    cdef void insert(CheapestInsertion self, Node new) except *:
+        cdef:
+            Node node
+        node = new.prev
+        new.next = node.next
+        node.next.prev = new
+        node.next = new
+
+
+cdef class SemiGreedyInsertion(SemiGreedyArc):
+
+    cdef double calc_insertion(SemiGreedyInsertion self, Node new) except *:
+        cdef:
+            double cost, cfrom, cnext, cbase, c
+            Node node
+            bool first_iter
+        cost = HUGE_VAL
+        node = self.tour.depot
+        first_iter = True
+        while not node.is_depot or first_iter:
+            cfrom = self.problem.D[node.index, new.index]
+            cnext = self.problem.D[new.index, node.next.index]
+            cbase = self.problem.D[node.index, node.next.index]
+            c = cfrom + cnext - cbase
+            if c < cost:
+                new.prev = node
+                cost = c
+            node = node.next
+            first_iter = False
+        return cost
+
+    cdef void insert(SemiGreedyInsertion self, Node new) except *:
+        cdef:
+            Node node
+        node = new.prev
+        new.next = node.next
+        node.next.prev = new
+        node.next = new
 
 
 cdef double clip(double value, double l, double u) except *:

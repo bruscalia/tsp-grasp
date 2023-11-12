@@ -6,15 +6,15 @@ import numpy as np
 from scipy.spatial.distance import squareform, pdist
 import matplotlib.pyplot as plt
 
-from tspgrasp.pypure.constructive import HistoryGreedy
+from tspgrasp.pypure.constructive import HistoryGreedyArc
 from tspgrasp.pypure.local_search import HistoryLS
 
 
 def plot_frame(coordinates, solution):
     fig, ax = plt.subplots(figsize=[3, 3], dpi=300)
     tour = np.array(solution, dtype=int)
-    ax.scatter(coordinates[:, 0], coordinates[:, 1], color="#C80033", s=4)  #FF4EBF
-    ax.plot(coordinates[tour, 0], coordinates[tour, 1], color="#C80033")
+    ax.scatter(coordinates[:, 0], coordinates[:, 1], color="#D2003C", s=4)  #FF4EBF
+    ax.plot(coordinates[tour, 0], coordinates[tour, 1], color="#D2003C")
     plt.axis('off')
     fig.tight_layout()
 
@@ -33,17 +33,24 @@ if __name__ == "__main__":
     np.random.seed(12)
 
     # Initialize data
-    N = 200
+    N = 300
     X = np.random.random((N, 2)) * np.array([[1, 1]])
     D = squareform(pdist(X))
 
+    plot_frame(X, [])
+    filename = f"empty.png"
+    plt.savefig(filename, transparent=True, dpi=300)
+
     # Greedy phase
-    greedy = HistoryGreedy(seed=12)
+    greedy = HistoryGreedyArc(seed=12)
     sol_greedy = greedy(D)
 
     # Local search
     ls = HistoryLS(seed=12)
-    ls(sol_greedy.tour[:-1], D)
+    sol = ls(sol_greedy.tour[:-1], D)
+
+    print(sol_greedy.cost)
+    print(sol.cost)
 
     greedy_frames = []
     for j, s in enumerate(greedy.history):
@@ -68,11 +75,12 @@ if __name__ == "__main__":
         plt.close()
 
     # Save last frame from LS
-    plt.savefig("solution.png", transparent=True, dpi=300)
+    plot_frame(X, ls.history[-1])
+    plt.savefig("solution_arcs.png", transparent=True, dpi=300)
 
     # Step 2: Convert PNGs into GIF
-    create_gif('greedy.gif', greedy_frames, duration=30)
-    create_gif('ls.gif', ls_frames, duration=150)
+    create_gif('greedy_arc.gif', greedy_frames, duration=30)
+    create_gif('ls_arc.gif', ls_frames, duration=150)
 
     # Optionally, remove the PNGs to cleanup
     for png_file in greedy_frames:

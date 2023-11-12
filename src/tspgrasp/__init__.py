@@ -1,5 +1,6 @@
 from tspgrasp.environ import (
-    Grasp, GreedyCheapestArc, SemiGreedy, LocalSearch, SimulatedAnnealing,
+    Grasp, CheapestArc, SemiGreedyArc, CheapestInsertion, SemiGreedyInsertion,
+    LocalSearch, SimulatedAnnealing,
     cythonized
 )
 from tspgrasp.dataloader import read_tsp_file

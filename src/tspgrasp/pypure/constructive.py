@@ -9,7 +9,7 @@ from tspgrasp.pypure.tour import Tour
 from tspgrasp.solution import Solution
 
 
-class CheapestArc:
+class Constructive:
 
     nodes: List[Node]
     queue: List[Node]
@@ -57,7 +57,7 @@ class CheapestArc:
         pass
 
 
-class GreedyCheapestArc(CheapestArc):
+class CheapestArc(Constructive):
 
     def do(self, problem: Problem):
         self.problem = problem
@@ -70,7 +70,7 @@ class GreedyCheapestArc(CheapestArc):
         return self.tour.cost
 
 
-class SemiGreedy(CheapestArc):
+class SemiGreedyArc(CheapestArc):
 
     def __init__(self, alpha=(0.0, 1.0), seed=None):
         super().__init__(seed)
@@ -95,7 +95,7 @@ class SemiGreedy(CheapestArc):
         return self.tour.cost
 
 
-class CheapestInsertion(SemiGreedy):
+class CheapestInsertion(CheapestArc):
 
     def calc_insertion(self, new: Node) -> float:
         node: Node
@@ -103,7 +103,8 @@ class CheapestInsertion(SemiGreedy):
         for node in self.tour.nodes:
             cfrom = self.problem.D[node.index, new.index]
             cnext = self.problem.D[new.index, node.next.index]
-            c = cfrom + cnext
+            cbase = self.problem.D[node.index, node.next.index]
+            c = cfrom + cnext - cbase
             if c < cost:
                 new.prev = node
                 cost = c
@@ -116,7 +117,16 @@ class CheapestInsertion(SemiGreedy):
         node.next = new
 
 
-class HistoryGreedy(GreedyCheapestArc):
+class SemiGreedyInsertion(CheapestInsertion, SemiGreedyArc):
+
+    def __init__(self, alpha=(0, 1), seed=None):
+        SemiGreedyArc.__init__(self, alpha, seed)
+
+    def do(self, problem: Problem):
+        return SemiGreedyArc.do(self, problem)
+
+
+class HistoryGreedyArc(CheapestArc):
 
     history: List[List[int]]
 
@@ -126,3 +136,21 @@ class HistoryGreedy(GreedyCheapestArc):
         for j in range(len(sol.tour)):
             self.history.append(sol.tour[:j + 1])
         return sol
+
+
+class HistoryGreedyInsertion(CheapestInsertion):
+
+    history: List[List[int]]
+
+    def __call__(self, D: np.ndarray) -> Solution:
+        self.history = []
+        sol = super().__call__(D)
+        return sol
+
+    def start(self):
+        super().start()
+        self.history.append(self.tour.solution)
+
+    def insert(self, new: Node):
+        super().insert(new)
+        self.history.append(self.tour.solution)
