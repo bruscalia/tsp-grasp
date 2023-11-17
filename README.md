@@ -5,7 +5,7 @@ Welcome to `tsp-grasp`! A Python package with Heuristics for solving the Traveli
 [Documentation](https://tsp-grasp.readthedocs.io/en/latest/)
 
 <p align="center">
-  <img src="./assets/grasp.gif" width="300" title="icon tsp">
+  <img src="./assets/grasp_arc_horizontal.gif" width="600" title="icon tsp">
 </p>
 
 ## Install

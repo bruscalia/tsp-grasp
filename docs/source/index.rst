@@ -12,10 +12,10 @@ Welcome to `tspgrasp`! A Python package with Heuristics for solving the Travelin
 * :ref:`Simple coding example <use>`
 * :doc:`Detailed examples <Examples>`
 
-.. image:: _static/grasp.gif
+.. image:: _static/grasp_arc_horizontal.gif
     :alt: header
     :align: center
-    :width: 300
+    :width: 600
     :target: https://github.com/bruscalia/tsp-grasp.git
 
 
