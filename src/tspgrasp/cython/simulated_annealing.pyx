@@ -10,7 +10,6 @@ import numpy as np
 
 from tspgrasp.cython.local_search cimport LocalSearch
 from tspgrasp.cython.node cimport Node
-from tspgrasp.cython.problem cimport Problem
 from tspgrasp.cython.tour cimport Tour
 from tspgrasp.cython.utils cimport ExpApproxTable
 

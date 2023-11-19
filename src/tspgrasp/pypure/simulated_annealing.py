@@ -1,7 +1,6 @@
 import numpy as np
 from tspgrasp.pypure.node import Node
 
-from tspgrasp.pypure.problem import Problem
 from tspgrasp.pypure.tour import Tour
 from tspgrasp.pypure.local_search import LocalSearch
 
@@ -19,7 +18,7 @@ class SimulatedAnnealing(LocalSearch):
         self._prepare_search(tour)
         nodes = sorted(self.tour.nodes, key=lambda x: x.index)
         customers = [n.index for n in nodes if not n.is_depot]
-        while proceed and n_iter < max_iter and self.T >= self.T_final:
+        while proceed and n_iter < max_iter:
             n_iter = n_iter + 1
             proceed = False or n_iter <= 1
             self._rng.shuffle(customers)
@@ -47,5 +46,9 @@ class SimulatedAnnealing(LocalSearch):
         self.T = self.T_start
 
     def eval_move(self, cost: float):
-        make_move = (cost <= -0.0001) or (np.exp(-(cost + self.T_final)/self.T) > self._rng.random())
+        c = cost + 0.0001
+        if self.T >= self.T_final:
+            make_move = (c <= 0.0) or (np.exp(-(c + self.T_final)/self.T) > self._rng.random())
+        else:
+            make_move = (c <= 0.0)
         return not make_move
