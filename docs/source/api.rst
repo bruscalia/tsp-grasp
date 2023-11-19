@@ -20,10 +20,17 @@ Grasp
 Constructive Heuristics
 -----------------------
 
-.. autoclass:: tspgrasp.environ.GreedyCheapestArc
+.. autoclass:: tspgrasp.environ.CheapestArc
    :special-members: __call__
 
-.. autoclass:: tspgrasp.environ.SemiGreedy
+.. autoclass:: tspgrasp.environ.SemiGreedyArc
+
+
+.. autoclass:: tspgrasp.environ.CheapestInsertion
+
+.. autoclass:: tspgrasp.environ.RandomInsertion
+
+.. autoclass:: tspgrasp.environ.SemiGreedyInsertion
 
 
 Local Search

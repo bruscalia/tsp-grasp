@@ -1,7 +1,7 @@
 import numpy as np
 
 from tspgrasp.base import BaseGrasp
-from tspgrasp.pypure.constructive import GreedyCheapestArc
+from tspgrasp.pypure.constructive import CheapestArc
 from tspgrasp.pypure.local_search import LocalSearch
 from tspgrasp.pypure.problem import Problem
 from tspgrasp.solution import Solution
@@ -17,7 +17,7 @@ class GrasPy(BaseGrasp):
         self.seed = seed
         self.costs = []
         if constructive is None:
-            constructive = GreedyCheapestArc(seed=seed)
+            constructive = CheapestArc(seed=seed)
         if local_search is None:
             local_search = LocalSearch(seed=seed)
         self.constructive = constructive

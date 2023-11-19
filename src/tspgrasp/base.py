@@ -30,9 +30,10 @@ class BaseGrasp:
         Parameters
         ----------
         constructive : Any, optional
-            Constructive heuristic. Current options available are `GreedyCheapestArc`
-            and `SemiGreedy`, which should be instantiated beforehand.
-            By default None, which instantiates a `GreedyCheapestArc` operator.
+            Constructive heuristic. Current options available are `CheapestArc`,
+            `SemiGreedyArc`, `CheapestInsertion`, `RandomInsertion`, and `SemiGreedyInsertion`,
+            which should be instantiated beforehand.
+            By default None, which instantiates a `CheapestArc` operator.
 
         local_search : Any, optional
             Local search heuristic. Current options available are `LocalSearch`

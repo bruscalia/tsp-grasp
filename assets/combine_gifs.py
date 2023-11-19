@@ -33,7 +33,7 @@ def combine_gifs(gif1_path, gif2_path, output_path):
 
 
 if __name__ == "__main__":
-    gif1_path = 'greedy.gif'
-    gif2_path = 'ls.gif'
-    output_path = 'grasp.gif'
+    gif1_path = 'greedy_arc_horizontal.gif'
+    gif2_path = 'ls_arc_horizontal.gif'
+    output_path = 'grasp_arc_horizontal.gif'
     combine_gifs(gif1_path, gif2_path, output_path)

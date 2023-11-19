@@ -2,7 +2,6 @@ from typing import List
 import warnings
 
 import numpy as np
-from tspgrasp.pypure.node import Node
 
 from tspgrasp.solution import Solution
 
@@ -21,7 +20,7 @@ except ModuleNotFoundError as e:
     cythonized = False
 
 
-class GreedyCheapestArc(tspconstr.GreedyCheapestArc):
+class CheapestArc(tspconstr.CheapestArc):
 
     def __init__(self, seed: int = None):
         """Greedy adaptive construction for the TSP inserting the next node at the end of the partial tour.
@@ -52,10 +51,12 @@ class GreedyCheapestArc(tspconstr.GreedyCheapestArc):
         return super().__call__(D)
 
 
-class SemiGreedy(tspconstr.SemiGreedy):
+class SemiGreedyArc(tspconstr.SemiGreedyArc):
 
     def __init__(self, alpha=(0.0, 1.0), seed=None):
-        """Greedy-randomized constructive heuristic for the TSP.
+        """Greedy-randomized constructive heuristic for the TSP. It inserts the next node
+        at the end of the partial tour.
+        Depot nodes are randomly chosen.
 
         Parameters
         ----------
@@ -67,6 +68,105 @@ class SemiGreedy(tspconstr.SemiGreedy):
             Random generator seed (differs behavior from cython to python), by default None
         """
         super().__init__(alpha=alpha, seed=seed)
+
+    def __call__(self, D: np.ndarray) -> Solution:
+        """Solves a TSP based on a pairwise distance matrix.
+
+        Parameters
+        ----------
+        D : np.ndarray
+            2-dimensional distance matrix
+
+        Returns
+        -------
+        Solution
+            Attributes:
+            - tour : List[int]
+            - cost : float
+        """
+        return super().__call__(D)
+
+
+class CheapestInsertion(tspconstr.CheapestInsertion):
+
+    def __init__(self, seed=None):
+        """Greedy adaptive construction for the TSP inserting the next node at the best position
+        between two existing nodes of the partial tour.
+        Depot nodes are randomly chosen.
+
+        Parameters
+        ----------
+        seed : int, optional
+            Random generator seed (differs behavior from cython to python), by default None
+        """
+        super().__init__(seed)
+
+    def __call__(self, D: np.ndarray) -> Solution:
+        """Solves a TSP based on a pairwise distance matrix.
+
+        Parameters
+        ----------
+        D : np.ndarray
+            2-dimensional distance matrix
+
+        Returns
+        -------
+        Solution
+            Attributes:
+            - tour : List[int]
+            - cost : float
+        """
+        return super().__call__(D)
+
+
+class RandomInsertion(tspconstr.RandomInsertion):
+
+    def __init__(self, seed=None):
+        """Constructive heuristic for the TSP inserting a random next node at the best position
+        between two existing nodes of the partial tour.
+        Depot nodes are randomly chosen.
+
+        Parameters
+        ----------
+        seed : int, optional
+            Random generator seed (differs behavior from cython to python), by default None
+        """
+        super().__init__(seed)
+
+    def __call__(self, D: np.ndarray) -> Solution:
+        """Solves a TSP based on a pairwise distance matrix.
+
+        Parameters
+        ----------
+        D : np.ndarray
+            2-dimensional distance matrix
+
+        Returns
+        -------
+        Solution
+            Attributes:
+            - tour : List[int]
+            - cost : float
+        """
+        return super().__call__(D)
+
+
+class SemiGreedyInsertion(tspconstr.SemiGreedyInsertion):
+
+    def __init__(self, alpha=(0.0, 1.0), seed=None):
+        """Greedy-randomized constructive heuristic for the TSP based on inserting the next node
+        between two existing nodes of the partial tour.
+
+        Parameters
+        ----------
+        alpha : tuple, optional
+            Alpha parameter - randomly generated at each iteration between range or fixed scalar.
+            Use values closer to one for a more greedy approach. By default (0.0, 1.0).
+
+        seed : int, optional
+            Random generator seed (differs behavior from cython to python), by default None
+        """
+        super().__init__(alpha, seed)
 
     def __call__(self, D: np.ndarray) -> Solution:
         """Solves a TSP based on a pairwise distance matrix.

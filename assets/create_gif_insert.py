@@ -6,12 +6,12 @@ import numpy as np
 from scipy.spatial.distance import squareform, pdist
 import matplotlib.pyplot as plt
 
-from tspgrasp.pypure.constructive import HistoryGreedyArc
+from tspgrasp.pypure.constructive import HistoryGreedyInsertion
 from tspgrasp.pypure.local_search import HistoryLS
 
 
 def plot_frame(coordinates, solution):
-    fig, ax = plt.subplots(figsize=[6, 3], dpi=150)
+    fig, ax = plt.subplots(figsize=[3, 3], dpi=300)
     tour = np.array(solution, dtype=int)
     ax.scatter(coordinates[:, 0], coordinates[:, 1], color="#D2003C", s=4)  #FF4EBF
     ax.plot(coordinates[tour, 0], coordinates[tour, 1], color="#D2003C")
@@ -33,16 +33,16 @@ if __name__ == "__main__":
     np.random.seed(12)
 
     # Initialize data
-    N = 200
-    X = np.random.random((N, 2)) * np.array([[2, 1]])
+    N = 300
+    X = np.random.random((N, 2)) * np.array([[1, 1]])
     D = squareform(pdist(X))
 
     plot_frame(X, [])
     filename = f"empty.png"
-    plt.savefig(filename, transparent=True, dpi=150)
+    plt.savefig(filename, transparent=True, dpi=300)
 
     # Greedy phase
-    greedy = HistoryGreedyArc(seed=12)
+    greedy = HistoryGreedyInsertion(seed=12)
     sol_greedy = greedy(D)
 
     # Local search
@@ -54,16 +54,16 @@ if __name__ == "__main__":
 
     greedy_frames = []
     for j, s in enumerate(greedy.history):
-        plot_frame(X, s[:-1])
+        plot_frame(X, s)
         filename = f"tmp/greedy_frame_{j}.png"
         greedy_frames.append(filename)
-        plt.savefig(filename, transparent=True, dpi=150)
+        plt.savefig(filename, transparent=True, dpi=300)
         plt.close()
 
     plot_frame(X, ls.history[0])
     filename = f"tmp/greedy_frame_{j + 1}.png"
     greedy_frames.append(filename)
-    plt.savefig(filename, transparent=True, dpi=150)
+    plt.savefig(filename, transparent=True, dpi=300)
     plt.close()
 
     ls_frames = []
@@ -71,16 +71,16 @@ if __name__ == "__main__":
         plot_frame(X, s)
         filename = f"tmp/ls_frame_{j}.png"
         ls_frames.append(filename)
-        plt.savefig(filename, transparent=True, dpi=150)
+        plt.savefig(filename, transparent=True, dpi=300)
         plt.close()
 
     # Save last frame from LS
     plot_frame(X, ls.history[-1])
-    plt.savefig("solution_arcs_horizontal.png", transparent=True, dpi=150)
+    plt.savefig("solution_insert.png", transparent=True, dpi=300)
 
     # Step 2: Convert PNGs into GIF
-    create_gif('greedy_arc_horizontal.gif', greedy_frames, duration=30)
-    create_gif('ls_arc_horizontal.gif', ls_frames, duration=150)
+    create_gif('greedy_insert.gif', greedy_frames, duration=30)
+    create_gif('ls_insert.gif', ls_frames, duration=150)
 
     # Optionally, remove the PNGs to cleanup
     for png_file in greedy_frames:
