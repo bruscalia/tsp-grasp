@@ -2,6 +2,7 @@
 # cython: language_level=3, boundscheck=False, wraparound=False, cdivision=True, embedsignature=True, initializedcheck=False
 
 from libcpp cimport bool
+from libc.math cimport exp
 from libcpp.vector cimport vector
 
 from typing import List
@@ -100,3 +101,37 @@ cdef int cpop(vector[int] &v, size_t index) except *:
     value = v[index]
     v.erase(v.begin() + index)
     return value
+
+
+cdef class ExpApproxTable:
+
+    def __init__(self, double l, double u, int size):
+        cdef:
+            int i
+        self.l = l
+        self.u = u
+        self.step = (u - l) / (size - 1)
+        self.table = vector[double]()
+        for i in range(size):
+            self.table.push_back(exp(l + i * self.step))
+
+    cdef double calc(self, double x) except *:
+        cdef:
+            double quantile, alpha
+            int lower, upper
+        if x < self.l or x > self.u:
+            return exp(x)  # fallback to direct computation
+        quantile = (x - self.l) / self.step
+        lower = <int>quantile
+        upper = lower + 1
+        alpha = quantile - lower
+        return (1 - alpha) * self.table[lower] + alpha * self.table[upper]
+
+    def pycalc(self, x: float) -> float:
+        return self.calc(x)
+
+
+cdef class PyExpApproxTable(ExpApproxTable):
+
+    def __call__(self, x: float) -> float:
+        return self.pycalc(x)
